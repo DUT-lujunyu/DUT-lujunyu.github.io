@@ -19,28 +19,36 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="搬砖日志">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="背景近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~ Ajax原理介绍利用google浏览器打开知乎中任意问题（本文中示例问题为 如何看待天府少年团改名熊猫少儿艺术团，公司称「不做饭圈文化，没有资本运作，爱舞台的孩子做有意义的事」？），发现知乎采取动态加载技术，内容">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python爬取知乎回答并进行舆情分析：爬取数据部分">
+<meta property="og:url" content="http://example.com/2021/08/24/python_zhihu/index.html">
 <meta property="og:site_name" content="搬砖日志">
+<meta property="og:description" content="背景近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~ Ajax原理介绍利用google浏览器打开知乎中任意问题（本文中示例问题为 如何看待天府少年团改名熊猫少儿艺术团，公司称「不做饭圈文化，没有资本运作，爱舞台的孩子做有意义的事」？），发现知乎采取动态加载技术，内容">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3bca656242a84d8298a4ff0bd00e5545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/47792da2a6624b3fbdd1e40154b74437.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f1643c2ade5e471d8c2ef3c485af50ea.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2021-08-24T13:11:35.733Z">
+<meta property="article:modified_time" content="2021-08-24T13:29:35.766Z">
 <meta property="article:author" content="Lu JunYu">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/3bca656242a84d8298a4ff0bd00e5545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2021/08/24/python_zhihu/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>搬砖日志</title>
+  <title>python爬取知乎回答并进行舆情分析：爬取数据部分 | 搬砖日志</title>
   
 
 
@@ -187,9 +195,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -205,10 +214,9 @@
       <meta itemprop="name" content="搬砖日志">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/24/python_zhihu/" class="post-title-link" itemprop="url">python爬取知乎回答并进行舆情分析：爬取数据部分</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          python爬取知乎回答并进行舆情分析：爬取数据部分
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -232,7 +240,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~</p>
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~</p>
 <h1 id="Ajax原理介绍"><a href="#Ajax原理介绍" class="headerlink" title="Ajax原理介绍"></a>Ajax原理介绍</h1><p>利用google浏览器打开知乎中任意问题（本文中示例问题为 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/482094335/answer/2080599564"><strong>如何看待天府少年团改名熊猫少儿艺术团，公司称「不做饭圈文化，没有资本运作，爱舞台的孩子做有意义的事」？</strong></a>），发现知乎采取动态加载技术，内容块只有在浏览器下滚时才会刷新。与微博和贴吧不同，知乎的html文件中没有“下一页”的相关节点，无法直接解析。因此需要从原始的Request报文着手，获取文本数据。</p>
 <p><strong>Ajax</strong>(Asynchronous Java and XML的缩写)是一种异步请求数据的web开发技术，能够改善用户的体验，提高页面性能。</p>
 <p>Ajax的工作原理相当于在用户和服务器之间加了—个中间层(<strong>XHR</strong>)，使用户操作与服务器响应异步化。并不是所有的用户请求都提交给服务器,像—些数据验证和数据处理等都交给XHR自己来做, 只有确定需要从服务器读取新数据时再由XHR代为向服务器提交请求，示意图如下：<br><img src="https://img-blog.csdnimg.cn/3bca656242a84d8298a4ff0bd00e5545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">在本次爬虫中，利用Ajax技术获取服务器发往浏览器的原始报文。</p>
@@ -261,91 +269,30 @@
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45019310/article/details/89923644?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162977091516780255228188%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=162977091516780255228188&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-89923644.pc_search_download_positive&utm_term=%E7%9F%A5%E4%B9%8Eajax&spm=1018.2226.3001.4187">python爬虫——关于ajax加载之爬取2019年知乎问题和描述</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.sohu.com/a/238246281_100109711">Ajax原理</a></p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/23/hello-world/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="Lu JunYu">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="搬砖日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/23/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-23 09:27:32" itemprop="dateCreated datePublished" datetime="2021-08-23T09:27:32+08:00">2021-08-23</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/23/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -398,6 +345,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ajax%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">Ajax原理介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Request-URL%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">Request URL分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#json%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">json报文结构分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
