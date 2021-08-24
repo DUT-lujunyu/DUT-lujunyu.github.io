@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/47792da2a6624b3fbdd1e40154b74437.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/f1643c2ade5e471d8c2ef3c485af50ea.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70">
 <meta property="article:published_time" content="2021-08-24T13:11:35.733Z">
-<meta property="article:modified_time" content="2021-08-24T13:39:24.402Z">
+<meta property="article:modified_time" content="2021-08-24T13:41:28.751Z">
 <meta property="article:author" content="Lu JunYu">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/3bca656242a84d8298a4ff0bd00e5545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70">
@@ -226,7 +226,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-08-24 21:11:35 / 修改时间：21:39:24" itemprop="dateCreated datePublished" datetime="2021-08-24T21:11:35+08:00">2021-08-24</time>
+              <time title="创建时间：2021-08-24 21:11:35 / 修改时间：21:41:28" itemprop="dateCreated datePublished" datetime="2021-08-24T21:11:35+08:00">2021-08-24</time>
             </span>
 
           
@@ -248,7 +248,55 @@
 <p><strong>在设定时应当注意</strong>：<br>offset 不能超过回答总数 - 1；<br>limit 不能超过上限。<br><img src="https://img-blog.csdnimg.cn/f1643c2ade5e471d8c2ef3c485af50ea.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">为了便于观察json数据报格式，将 limit 设定为1，复制以下URL即可查看json报文信息。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://www.zhihu.com/api/v4/questions/<span class="number">482094335</span>/answers?include=data%5B*%5D.is_normal%2Cadmin_closed_comment%2Creward_info%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cattachment%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelevant_info%2Cquestion%2Cexcerpt%2Cis_labeled%2Cpaid_info%2Cpaid_info_content%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cis_recognized%3Bdata%5B*%5D.mark_infos%5B*%5D.url%3Bdata%5B*%5D.author.follower_count%2Cvip_info%2Cbadge%5B*%5D.topics%3Bdata%5B*%5D.settings.table_of_content.enabled&amp;offset=<span class="number">0</span>&amp;limit=<span class="number">1</span>&amp;sort_by=default&amp;platform=desktop</span><br></pre></td></tr></table></figure>
 
-<h1 id="json报文结构分析"><a href="#json报文结构分析" class="headerlink" title="json报文结构分析"></a>json报文结构分析</h1><p>下面对json报文进行结构分析，报文主要分为两部分：<strong>“data”</strong> 和 <strong>“page”</strong>。<br>data：包含 html 文本数据，本次爬虫重点关注以下字段：<br>|字段 | 含义|<br>| :—-: | :—-: |<br>author -&gt; name | 用户名<br>author -&gt; url_token | 用户token<br>content | 回答<br>updated_time |回答时间<br>voteup_count |赞同数量<br>comment_count |评论数量</p>
+<h1 id="json报文结构分析"><a href="#json报文结构分析" class="headerlink" title="json报文结构分析"></a>json报文结构分析</h1><p>下面对json报文进行结构分析，报文主要分为两部分：<strong>“data”</strong> 和 <strong>“page”</strong>。<br>data：包含 html 文本数据，本次爬虫重点关注以下字段：</p>
+<table>
+<thead>
+<tr>
+<th align="center">字段</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">author -&gt; name</td>
+<td align="center">用户名</td>
+</tr>
+<tr>
+<td align="center">author -&gt; url_token</td>
+<td align="center">用户token</td>
+</tr>
+<tr>
+<td align="center">content</td>
+<td align="center">回答</td>
+</tr>
+<tr>
+<td align="center">updated_time</td>
+<td align="center">回答时间</td>
+</tr>
+<tr>
+<td align="center">voteup_count</td>
+<td align="center">赞同数量</td>
+</tr>
+<tr>
+<td align="center">comment_count</td>
+<td align="center">评论数量</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>表头</th>
+<th>表头</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单元格</td>
+<td>单元格</td>
+</tr>
+<tr>
+<td>单元格</td>
+<td>单元格</td>
+</tr>
+</tbody></table>
 <p><strong>说明：</strong><br><strong>用户token是用户的唯一识别标志</strong>，“<a target="_blank" rel="noopener" href="https://www.zhihu.com/people/%E2%80%9D">https://www.zhihu.com/people/”</a> + url_token 为该用户知乎主页；<br><strong>报文中的时间都是时间戳</strong>，需要转化为 “年-月-日 时-分-秒” 的形式。</p>
 <p>page：记录是否已经是该问题下的最后一个回答。如果字段 <strong>is_end = true</strong>，则可以结束请求。</p>
 <h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>引包：</p>
