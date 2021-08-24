@@ -62,22 +62,6 @@
 <td align="center">评论数量</td>
 </tr>
 </tbody></table>
-<table>
-<thead>
-<tr>
-<th>表头</th>
-<th>表头</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>单元格</td>
-<td>单元格</td>
-</tr>
-<tr>
-<td>单元格</td>
-<td>单元格</td>
-</tr>
-</tbody></table>
 <p><strong>说明：</strong><br><strong>用户token是用户的唯一识别标志</strong>，“<a href="https://www.zhihu.com/people/%E2%80%9D">https://www.zhihu.com/people/”</a> + url_token 为该用户知乎主页；<br><strong>报文中的时间都是时间戳</strong>，需要转化为 “年-月-日 时-分-秒” 的形式。</p>
 <p>page：记录是否已经是该问题下的最后一个回答。如果字段 <strong>is_end = true</strong>，则可以结束请求。</p>
 <h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>引包：</p>
