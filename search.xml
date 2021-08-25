@@ -17,6 +17,9 @@
 
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
+      <tags>
+        <tag>博客相关</tag>
+      </tags>
   </entry>
   <entry>
     <title>python爬取知乎回答并进行舆情分析：爬取数据部分</title>
@@ -82,5 +85,9 @@
 <p><a href="https://blog.csdn.net/weixin_45019310/article/details/89923644?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162977091516780255228188%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=162977091516780255228188&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-89923644.pc_search_download_positive&utm_term=%E7%9F%A5%E4%B9%8Eajax&spm=1018.2226.3001.4187">python爬虫——关于ajax加载之爬取2019年知乎问题和描述</a></p>
 <p><a href="https://www.sohu.com/a/238246281_100109711">Ajax原理</a></p>
 ]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>爬虫</tag>
+      </tags>
   </entry>
 </search>
