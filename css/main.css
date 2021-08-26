@@ -1228,7 +1228,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #8b4982;
+  background: #4db4cc;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2609,7 +2609,6 @@ body {
 }
 .header-inner {
   border-radius: 20px 20px 20px 20px;
-  opacity: 0.85;
 }
 .sidebar {
   transition-duration: 0.4s;
@@ -2623,16 +2622,48 @@ body {
   box-sizing: border-box;
   color: var(--text-color);
   width: 240px;
-  opacity: 0;
 }
+.popup {
+  opacity: 0.95;
+}
+.posts-expand .post-eof {
+  display: block;
+  width: 67%;
+  height: 2px;
+  background: #ccc;
+  text-align: center;
+}
+.content-wrap {
+  border-radius: 20px 20px 20px 20px;
+  opacity: 0.85;
+}
+.out-img-topic {
+  display: block;
+  max-height: 300px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+img.img-topic {
+  display: block;
+  margin-left: 0.7em;
+  margin-right: 0.7em;
+  padding: 0;
+  float: right;
+  clear: right;
+}
+/*
+// 文章版块样式
 .post-block {
   background: var(--content-bg-color);
-  border-radius: 10px 10px 10px 10px;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.12);
-  padding: 40px;
+  border-radius: 10px 10px 10px 10px; //边框圆角
+  // box-shadow: 0 2px 2px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.12);
+  // padding: 40px;
 }
+
+//之后的所有文章
 .post-block + .post-block {
-  border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px; //边框圆角
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.12), 0 -1px 0.5px 0 rgba(0,0,0,0.09);
   margin-top: 12px;
 }
+*/
