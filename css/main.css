@@ -1228,7 +1228,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #7153cd;
+  background: #a1b3ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2621,9 +2621,6 @@ body {
   font-size: 1em;
   line-height: 2;
 }
-.header-inner {
-  border-radius: 20px 20px 20px 20px;
-}
 .sidebar {
   transition-duration: 0.4s;
   opacity: 0.85;
@@ -2651,24 +2648,20 @@ body {
   border-radius: 20px 20px 20px 20px;
   opacity: 0.85;
 }
-/*
 .out-img-topic {
   display: block;
   max-height: 300px;
   margin-bottom: 24px;
   overflow: hidden;
 }
-
-//图片
 img.img-topic {
-  display: block ;
-  margin-left: .7em;
-  margin-right: .7em;
+  display: block;
+  margin-left: 0.7em;
+  margin-right: 0.7em;
   padding: 0;
   float: right;
   clear: right;
 }
-*/
 /*
 // 文章版块样式
 .post-block {
