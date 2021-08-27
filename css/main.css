@@ -1228,7 +1228,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #edffdd;
+  background: #c818c6;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2596,6 +2596,20 @@ ul.breadcrumb li + li:last-child {
 .links-of-blogroll-item {
   padding: 0;
 }
+.out-img-topic {
+  display: block;
+  max-height: 1000px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+img.img-topic {
+  display: block;
+  margin-left: 0.7em;
+  margin-right: 0.7em;
+  padding: 0;
+  float: right;
+  clear: right;
+}
 body {
   background: url("/images/background.jpg");
   background-repeat: no-repeat;
@@ -2637,20 +2651,24 @@ body {
   border-radius: 20px 20px 20px 20px;
   opacity: 0.85;
 }
+/*
 .out-img-topic {
   display: block;
   max-height: 300px;
   margin-bottom: 24px;
   overflow: hidden;
 }
+
+//图片
 img.img-topic {
-  display: block;
-  margin-left: 0.7em;
-  margin-right: 0.7em;
+  display: block ;
+  margin-left: .7em;
+  margin-right: .7em;
   padding: 0;
   float: right;
   clear: right;
 }
+*/
 /*
 // 文章版块样式
 .post-block {
