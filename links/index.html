@@ -237,20 +237,33 @@
             }
 
             .card {
-                width: 360px;
+                width: 250px;
                 font-size: 1rem;
                 padding: 10px 10px;
                 border-radius: 4px;
                 transition-duration: 0.15s;
                 margin-bottom: 1rem;
                 display:flex;
+                float: left;
             }
+
+            .card_used {
+                width: 100px;
+                font-size: 1rem;
+                padding: 10px 10px;
+                border-radius: 4px;
+                transition-duration: 0.15s;
+                margin-bottom: 1rem;
+                display:flex;
+                float: left;
+            }
+            /*
             .card:nth-child(odd) {
                 float: left;
             }
             .card:nth-child(even) {
-                float: right;
-            }
+                float: left;
+            }*/
             .card:hover {
                 transform: scale(1.1);
                 box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);
@@ -259,8 +272,8 @@
                 border:none;
             }
             .card .ava {
-                width: 3rem!important;
-                height: 3rem!important;
+                width: 5rem!important;
+                height: 5rem!important;
                 margin:0!important;
                 margin-right: 1em!important;
                 border-radius:4px;
@@ -293,10 +306,56 @@
         </style>
         <div class="links-content">
 
+            <div class="no-icon note success"><div class="link-info">💻 常用网站</div></div>
+            <div class="link-navigation">
+                
+                    <div class="card_used" >
+                        <div class="card-header">
+                        <div><a href="https://www.google.com.hk/" target="_blank"> Google</a> </div>
+                        <div class="info"></div>
+                        </div>
+                    </div>
+                
+                    <div class="card_used" >
+                        <div class="card-header">
+                        <div><a href="https://www.baidu.com" target="_blank"> 百度</a> </div>
+                        <div class="info"></div>
+                        </div>
+                    </div>
+                
+                    <div class="card_used" >
+                        <div class="card-header">
+                        <div><a href="https://www.csdn.net/" target="_blank"> CSDN</a> </div>
+                        <div class="info"></div>
+                        </div>
+                    </div>
+                
+                    <div class="card_used" >
+                        <div class="card-header">
+                        <div><a href="https://juejin.cn/" target="_blank"> 掘金</a> </div>
+                        <div class="info"></div>
+                        </div>
+                    </div>
+                
+                    <div class="card_used" >
+                        <div class="card-header">
+                        <div><a href="https://www.zhihu.com/follow" target="_blank"> 知乎</a> </div>
+                        <div class="info"></div>
+                        </div>
+                    </div>
+                
+                    <div class="card_used" >
+                        <div class="card-header">
+                        <div><a href="https://www.bilibili.com/" target="_blank"> 哔哩哔哩</a> </div>
+                        <div class="info"></div>
+                        </div>
+                    </div>
+                
+            </div>
+
             <div class="no-icon note warning"><div class="link-info">👨‍🎓 大佬贴贴</div></div>
             <div class="link-navigation">
-                    
-
+                
                     <div class="card" >
                         <img class="ava nofancybox" src="https://cdn.jsdelivr.net/gh/heson525/pic@master/pic/avatar03.png"/>
                         <div class="card-header">
@@ -304,26 +363,20 @@
                         <div class="info">人生在勤，不索何获</div>
                         </div>
                     </div>
-
                 
-
                     <div class="card" >
                         <img class="ava nofancybox" src="https://tding.top/images/avatar.webp"/>
                         <div class="card-header">
                         <div><a href="https://tding.top" target="_blank"> 小丁</a> </div>
-                        <div class="info">世间所有的相遇，都是久别重逢</div>
+                        <div class="info">世间所有的相遇，<br>都是久别重逢</div>
                         </div>
                     </div>
-
                 
-
             </div>
 
             <div class="no-icon note primary"><div class="link-info">🍭 有朋至远方来，不亦乐乎</div></div>
-
             <div class="link-navigation">
                     
-
                     <div class="card">
                         <img class="ava nofancybox" src="https://cdn.jsdelivr.net/gh/yubifeng/blog-resource/bloghosting/website/static/websiteAvatar.webp"/>
                         <div class="card-header">
@@ -331,19 +384,15 @@
                         <div class="info">人生短暂，经不起等待</div>
                         </div>
                     </div>
-
                 
-
                     <div class="card">
                         <img class="ava nofancybox" src="https://www.lemjuice.cn/00000147.png"/>
                         <div class="card-header">
                         <div><a href="https://www.lemjuice.cn/" target="_blank"> 空山柠语</a> </div>
-                        <div class="info">歲時艱，行路難。形將破，意且存，勿忘我</div>
+                        <div class="info">歲時艱，行路難。形將破，<br>意且存，勿忘我</div>
                         </div>
                     </div>
-
                 
-
             </div>
 
             <h3 id="申请要求："><a href="#申请要求：" class="headerlink" title="申请要求："></a>申请要求：</h3><p>1、内容持续更新且可以稳定访问<br>        2、网页整洁无繁杂广告推广<br>        3、头像能够快速加载</p>
