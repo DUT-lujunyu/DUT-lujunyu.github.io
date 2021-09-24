@@ -220,6 +220,16 @@
         </h1>
 
         <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-tag"></i>
+              </span>
+                <a href="/tags/python/" rel="tag">python</a>
+                <a href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a>
+              <span class="post-meta-divider">|</span>
+          
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
@@ -235,8 +245,8 @@
                 <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2021-08-26 20:34:03" itemprop="dateModified" datetime="2021-08-26T20:34:03+08:00">2021-08-26</time>
               </span>
-
           
+            <br/>
             <span id="/2021/08/24/python_zhihu/" class="post-meta-item leancloud_visitors" data-flag-title="python爬取知乎回答并进行舆情分析：爬取数据部分" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
@@ -270,6 +280,8 @@
               </span>
               <span>4 分钟</span>
             </span>
+          
+          
             <div class="post-description">近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~</div>
 
         </div>
@@ -279,7 +291,6 @@
     
     
     <div class="post-body" itemprop="articleBody">
-
       
         <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~</p>
 <h1 id="Ajax原理介绍"><a href="#Ajax原理介绍" class="headerlink" title="Ajax原理介绍"></a>Ajax原理介绍</h1><p>利用google浏览器打开知乎中任意问题（本文中示例问题为 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/482094335/answer/2080599564"><strong>如何看待天府少年团改名熊猫少儿艺术团，公司称「不做饭圈文化，没有资本运作，爱舞台的孩子做有意义的事」？</strong></a>），发现知乎采取动态加载技术，内容块只有在浏览器下滚时才会刷新。与微博和贴吧不同，知乎的html文件中没有“下一页”的相关节点，无法直接解析。因此需要从原始的Request报文着手，获取文本数据。</p>
@@ -349,10 +360,6 @@
     
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/python/" rel="tag"># python</a>
-              <a href="/tags/%E7%88%AC%E8%99%AB/" rel="tag"># 爬虫</a>
-          </div>
 
         
 
@@ -457,6 +464,9 @@
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
         <a href="https://github.com/DUT-lujunyu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;DUT-lujunyu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:DUT_ljy@163.com" title="E-Mail → mailto:DUT_ljy@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
       </span>
   </div>
 
