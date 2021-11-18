@@ -19,24 +19,27 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="根据上一节爬取的数据，利用jieba工具对回答分词，统计词频生成词云，并利用折线图统计每日回答数，做一个简单的舆情分析。">
+  <meta name="description" content="利用实例学习 torch.nn.Embedding() 的使用方法。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python爬取知乎回答并进行舆情分析：舆情分析部分">
-<meta property="og:url" content="http://example.com/2021/08/27/python_zhihu2/index.html">
+<meta property="og:title" content="torch.nn.Embedding() 原理及应用">
+<meta property="og:url" content="http://example.com/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/index.html">
 <meta property="og:site_name" content="搬砖日志">
-<meta property="og:description" content="根据上一节爬取的数据，利用jieba工具对回答分词，统计词频生成词云，并利用折线图统计每日回答数，做一个简单的舆情分析。">
+<meta property="og:description" content="利用实例学习 torch.nn.Embedding() 的使用方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/5e9215aee694425fa89325e3a8a4484d.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/9b3c93065a6640d7a8453a52d0b08a03.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center">
-<meta property="article:published_time" content="2021-08-27T07:50:46.491Z">
-<meta property="article:modified_time" content="2021-08-27T07:56:31.894Z">
+<meta property="og:image" content="d:/markdown/images/image-20211118185929006.png">
+<meta property="og:image" content="d:/markdown/images/image-20211118190039010.png">
+<meta property="og:image" content="d:/markdown/images/image-20211118190148552.png">
+<meta property="og:image" content="d:/markdown/images/image-20211118190333360.png">
+<meta property="og:image" content="d:/markdown/images/image-20211118190411230.png">
+<meta property="article:published_time" content="2021-11-18T10:11:04.507Z">
+<meta property="article:modified_time" content="2021-11-18T15:33:39.251Z">
 <meta property="article:author" content="Lu JunYu">
-<meta property="article:tag" content="python">
-<meta property="article:tag" content="数据分析">
+<meta property="article:tag" content="pytorch">
+<meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/5e9215aee694425fa89325e3a8a4484d.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center">
+<meta name="twitter:image" content="d:/markdown/images/image-20211118185929006.png">
 
-<link rel="canonical" href="http://example.com/2021/08/27/python_zhihu2/">
+<link rel="canonical" href="http://example.com/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/">
 
 
 <script id="page-configurations">
@@ -49,7 +52,7 @@
   };
 </script>
 
-  <title>python爬取知乎回答并进行舆情分析：舆情分析部分 | 搬砖日志</title>
+  <title>torch.nn.Embedding() 原理及应用 | 搬砖日志</title>
   
 
 
@@ -202,7 +205,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/27/python_zhihu2/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/author.jpg">
@@ -215,7 +218,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          python爬取知乎回答并进行舆情分析：舆情分析部分
+          torch.nn.Embedding() 原理及应用
         </h1>
 
         <div class="post-meta">
@@ -225,8 +228,8 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-tag"></i>
               </span>
-                <a href="/tags/python/" rel="tag">python</a>
-                <a href="/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" rel="tag">数据分析</a>
+                <a href="/tags/pytorch/" rel="tag">pytorch</a>
+                <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a>
               <span class="post-meta-divider">|</span>
           
             <span class="post-meta-item">
@@ -236,11 +239,11 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-08-27 15:50:46 / 修改时间：15:56:31" itemprop="dateCreated datePublished" datetime="2021-08-27T15:50:46+08:00">2021-08-27</time>
+              <time title="创建时间：2021-11-18 18:11:04 / 修改时间：23:33:39" itemprop="dateCreated datePublished" datetime="2021-11-18T18:11:04+08:00">2021-11-18</time>
             </span>
           
             <br/>
-            <span id="/2021/08/27/python_zhihu2/" class="post-meta-item leancloud_visitors" data-flag-title="python爬取知乎回答并进行舆情分析：舆情分析部分" title="阅读次数">
+            <span id="/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/" class="post-meta-item leancloud_visitors" data-flag-title="torch.nn.Embedding() 原理及应用" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -255,8 +258,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/08/27/python_zhihu2/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/27/python_zhihu2/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -265,17 +268,17 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>2.4k</span>
+              <span>4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-              <span>2 分钟</span>
+              <span>4 分钟</span>
             </span>
           
           
-            <div class="post-description">根据上一节爬取的数据，利用jieba工具对回答分词，统计词频生成词云，并利用折线图统计每日回答数，做一个简单的舆情分析。</div>
+            <div class="post-description">利用实例学习 torch.nn.Embedding() 的使用方法。</div>
 
         </div>
       </header>
@@ -285,25 +288,84 @@
     
     <div class="post-body" itemprop="articleBody">
       
-        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在上一节中，利用爬虫爬取了<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/482094335/answer/2080599564"><strong>问题</strong></a>下的所有回答，原文链接如下：<br><a target="_blank" rel="noopener" href="http://dutljy.top/2021/08/24/python_zhihu/">python爬取知乎回答并进行舆情分析：爬取数据部分</a><br>本节中利用jieba工具对回答分词，统计词频生成词云，并利用折线图统计每日回答数，做一个简单的舆情分析。</p>
-<h1 id="生成词云"><a href="#生成词云" class="headerlink" title="生成词云"></a>生成词云</h1><h2 id="文本预处理（使用停用词、自定义分词）"><a href="#文本预处理（使用停用词、自定义分词）" class="headerlink" title="文本预处理（使用停用词、自定义分词）"></a>文本预处理（使用停用词、自定义分词）</h2><p>jieba分词支持<strong>停用词</strong>和<strong>自定义分词</strong>。停用词能够过滤掉与语义无关的单词，自定义分词能够防止指定词汇被切分，例如某些不被一般词典收纳的新潮词汇。</p>
-<p>引包：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> matplotlib</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br></pre></td></tr></table></figure>
-<p>加载词典：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加载自定义词典  </span></span><br><span class="line">newdict_path = <span class="string">&quot;./source/newdict.txt&quot;</span></span><br><span class="line">jieba.load_userdict(newdict_path)       </span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载停用词词典</span></span><br><span class="line">stop_list = []</span><br><span class="line">stopdict_path = <span class="string">&#x27;./source/stopdict.txt&#x27;</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(stopdict_path, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">        stop_list.append(line[:-<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
-<p>数据预处理：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data = pd.read_csv(<span class="string">&#x27;./test.csv&#x27;</span>)</span><br><span class="line">data[<span class="string">&#x27;回答&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : x.replace(<span class="string">&#x27;\n&#x27;</span>, <span class="string">&#x27;&#x27;</span>)) </span><br><span class="line">data[<span class="string">&#x27;回答&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : x.replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;&#x27;</span>)) </span><br><span class="line">data[<span class="string">&#x27;分词&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : [i <span class="keyword">for</span> i <span class="keyword">in</span> jieba.cut(x) <span class="keyword">if</span> i <span class="keyword">not</span> <span class="keyword">in</span> stop_list])</span><br><span class="line">data[<span class="string">&#x27;创建时间&#x27;</span>] = data[<span class="string">&#x27;创建时间&#x27;</span>].apply(<span class="keyword">lambda</span> x : x[:<span class="number">10</span>])</span><br></pre></td></tr></table></figure>
+        <h1 id="torch-nn-Embedding-原理及应用"><a href="#torch-nn-Embedding-原理及应用" class="headerlink" title="torch.nn.Embedding() 原理及应用"></a>torch.nn.Embedding() 原理及应用</h1><p>在自然语言处理中，embedding是一种十分常见的操作。它可以将单词向量化，生成计算机可以计算处理的形式。</p>
+<blockquote>
+<p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/63e7acc5e890">通俗讲解pytorch中nn.Embedding原理及使用</a></p>
+<p><a target="_blank" rel="noopener" href="https://pytorch.org/docs/master/generated/torch.nn.Embedding.html">pytorch embedding 官方文档</a></p>
+</blockquote>
+<h1 id="pytorch函数调用"><a href="#pytorch函数调用" class="headerlink" title="pytorch函数调用"></a>pytorch函数调用</h1><h2 id="调用方式"><a href="#调用方式" class="headerlink" title="调用方式"></a>调用方式</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=<span class="literal">None</span>, max_norm=<span class="literal">None</span>, norm_type=<span class="number">2.0</span>, scale_grad_by_freq=<span class="literal">False</span>, sparse=<span class="literal">False</span>, _weight=<span class="literal">None</span>, device=<span class="literal">None</span>, dtype=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
 
-<h2 id="统计词频"><a href="#统计词频" class="headerlink" title="统计词频"></a>统计词频</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">all_words = data[<span class="string">&#x27;分词&#x27;</span>].to_list()</span><br><span class="line"></span><br><span class="line">word_dict = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> words <span class="keyword">in</span> all_words:</span><br><span class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> words:</span><br><span class="line">        <span class="keyword">if</span> word <span class="keyword">in</span> word_dict:</span><br><span class="line">            word_dict[word] += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            word_dict[word] = <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<h2 id="生成词云-1"><a href="#生成词云-1" class="headerlink" title="生成词云"></a>生成词云</h2><p>利用<strong>wordcloud</strong>绘制词云：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> wordcloud <span class="keyword">import</span> WordCloud</span><br><span class="line"><span class="comment"># 生成词云</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_word_cloud</span>(<span class="params">word_dict</span>):</span></span><br><span class="line">    <span class="comment"># 支持中文, SimHei.ttf可从以下地址下载：https://github.com/cystanford/word_cloud</span></span><br><span class="line">    wc = WordCloud(</span><br><span class="line">        font_path=<span class="string">&quot;./source/SimHei.ttf&quot;</span>,</span><br><span class="line">        background_color=<span class="string">&#x27;white&#x27;</span>,</span><br><span class="line">        max_words=<span class="number">25</span>,</span><br><span class="line">        width=<span class="number">1800</span>,</span><br><span class="line">        height=<span class="number">1200</span>,</span><br><span class="line">    )</span><br><span class="line">    word_cloud = wc.generate_from_frequencies(word_dict)</span><br><span class="line">    <span class="comment"># 写词云图片</span></span><br><span class="line">    word_cloud.to_file(<span class="string">&quot;wordcloud2.jpg&quot;</span>)</span><br><span class="line">    <span class="comment"># 显示词云文件</span></span><br><span class="line">    plt.imshow(word_cloud)</span><br><span class="line">    plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据词频生成词云</span></span><br><span class="line">create_word_cloud(word_dict)</span><br></pre></td></tr></table></figure>
-<p>结果如下：<br><img src="https://img-blog.csdnimg.cn/5e9215aee694425fa89325e3a8a4484d.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center" alt="在这里插入图片描述"></p>
-<h1 id="折线图"><a href="#折线图" class="headerlink" title="折线图"></a>折线图</h1><h2 id="统计每日回答数"><a href="#统计每日回答数" class="headerlink" title="统计每日回答数"></a>统计每日回答数</h2><p>利用字典统计每日回答的数量。：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修正回答时间格式：年-月-日 </span></span><br><span class="line">data[<span class="string">&#x27;创建时间&#x27;</span>] = data[<span class="string">&#x27;创建时间&#x27;</span>].apply(<span class="keyword">lambda</span> x : x[:<span class="number">10</span>])</span><br><span class="line"></span><br><span class="line">date_dict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">all_dates = data[<span class="string">&#x27;创建时间&#x27;</span>].to_list()</span><br><span class="line"><span class="keyword">for</span> date <span class="keyword">in</span> all_dates:</span><br><span class="line">    <span class="keyword">if</span> date <span class="keyword">not</span> <span class="keyword">in</span> date_dict:</span><br><span class="line">        date_dict[date] = <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        date_dict[date] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">x = []</span><br><span class="line">y = []</span><br><span class="line"><span class="keyword">for</span> key,value <span class="keyword">in</span> date_dict.items():</span><br><span class="line">    x.append(key)</span><br><span class="line">    y.append(value)</span><br></pre></td></tr></table></figure>
+<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>生成一个简单的查找表，用于存储固定大小的词典的嵌入向量。</p>
+<p>通常用于存储单词嵌入并使用索引检索它们。模块的输入是一个索引列表，输出是相应的单词嵌入向量，嵌入向量反映了单词蕴含的语义特征。</p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><ul>
+<li>num_embeddings (<em>int</em>) – 词典的大小尺寸，比如总共出现5000个词，那就输入5000。此时index为（0-4999）</li>
+<li>embedding_dim (<em>int</em>) – 嵌入向量的维度，即用多少维来表示一个符号。</li>
+<li>padding_idx (<em>int, optional</em>) – 填充id，比如，输入长度为100，但是每次的句子长度并不一样，后面就需要用统一的数字填充，而这里就是指定这个数字，这样，网络在遇到填充id时，就不会计算其与其它符号的相关性。<strong>（初始化为0）</strong></li>
+<li>max_norm (<em>float, optional</em>) – 最大范数，如果嵌入向量的范数超过了这个界限，就要进行再归一化。</li>
+<li>norm_type (<em>float, optional</em>) – 指定利用什么范数计算，并用于对比max_norm，默认为2范数。</li>
+<li>scale_grad_by_freq (<em>boolean, optional</em>) – 根据单词在mini-batch中出现的频率，对梯度进行放缩。默认为False.</li>
+<li>sparse (<em>bool, optional</em>) – 若为True,则与权重矩阵相关的梯度转变为稀疏张量。</li>
+</ul>
+<h3 id="成员函数"><a href="#成员函数" class="headerlink" title="成员函数"></a>成员函数</h3><ul>
+<li>Embedding.weight(<em>Tensor</em>) – (0,1) 浮点数初始化可学习权值矩阵，形状为(num_embeddings, embeding_dim)。</li>
+</ul>
+<h3 id="输入输出形状"><a href="#输入输出形状" class="headerlink" title="输入输出形状"></a>输入输出形状</h3><ul>
+<li>Input: (∗), 任意形状的 IntTensor 或 LongTensor。</li>
+<li>Output: (∗,H), * 是 input 的形状，H = embedding_dim。</li>
+</ul>
+<h1 id="embedding应用"><a href="#embedding应用" class="headerlink" title="embedding应用"></a>embedding应用</h1><h2 id="逐步解析"><a href="#逐步解析" class="headerlink" title="逐步解析"></a>逐步解析</h2><p>torch.nn 包下的Embedding，作为训练的一层，随模型训练得到适合的词向量，再将相应的词向量放进网络，这里我们以 <strong>Bi_LSTM</strong> 为例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#建立词向量层</span></span><br><span class="line">embed = torch.nn.Embedding(n_vocabulary,embedding_dim)</span><br></pre></td></tr></table></figure>
 
-<h2 id="生成折线图"><a href="#生成折线图" class="headerlink" title="生成折线图"></a>生成折线图</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="comment">#通用设置，背景颜色、图片大小、是否</span></span><br><span class="line">matplotlib.rc(<span class="string">&#x27;axes&#x27;</span>, facecolor = <span class="string">&#x27;white&#x27;</span>)</span><br><span class="line">matplotlib.rc(<span class="string">&#x27;figure&#x27;</span>, figsize = (<span class="number">6</span>, <span class="number">4</span>))</span><br><span class="line">matplotlib.rc(<span class="string">&#x27;axes&#x27;</span>, grid = <span class="literal">True</span>)</span><br><span class="line"><span class="comment">#数据及线属性</span></span><br><span class="line">plt.plot(x, y,<span class="string">&#x27;.-&#x27;</span>)</span><br><span class="line"><span class="comment">#标题设置</span></span><br><span class="line">plt.title(<span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;date&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;amount&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<p>结果如下：<br><img src="https://img-blog.csdnimg.cn/9b3c93065a6640d7a8453a52d0b08a03.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center" alt="在这里插入图片描述"></p>
-<h1 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h1><p>除了<strong>回答</strong>和<strong>创建时间</strong>两个字段以外，爬取结果的其他字段也可以进行数据分析；也可以尝试利用user_token做一个用户画像分析。</p>
+<p>实际上，上面通过随机初始化建立了 embedding 层后，建立了一个“二维表”，存储了词典中每个词的词向量。每个 batch 的训练，都要从词向量表找到 batch 对应的单词的词向量作为模型的输入。那么<strong>如何把一个 batch 中每个句子的所有单词的词向量放进网络中呢，输入和输出都是什么样子呢？</strong></p>
+<p>首先我们需要建立一个词典，并生成生成单词到词典序号的映射。假设一个 batch 如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;I am a boy.&#x27;</span>,<span class="string">&#x27;How am I?&#x27;</span>,<span class="string">&#x27;I am very lucky.&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>显然，这个 batch 有3个句子，即batch_size=3</p>
+<p>我们将句子标准化：将单词大写转小写，标点分离，将三个 list 按单词数从多到少排列。经处理后，mini-batch变为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch = [[<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;boy&#x27;</span>,<span class="string">&#x27;.&#x27;</span>],[<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;very&#x27;</span>,<span class="string">&#x27;lucky&#x27;</span>,<span class="string">&#x27;.&#x27;</span>]，[<span class="string">&#x27;how&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;?&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>同时我们得到词典，生成词典-index 的映射：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dict</span> = &#123;<span class="string">&#x27;i&#x27;</span>:<span class="number">0</span>, <span class="string">&#x27;am&#x27;</span>:<span class="number">1</span>, <span class="string">&#x27;a&#x27;</span>:<span class="number">2</span>, <span class="string">&#x27;boy&#x27;</span>:<span class="number">3</span>, <span class="string">&#x27;.&#x27;</span>:<span class="number">4</span>, <span class="string">&#x27;very&#x27;</span>:<span class="number">5</span>, <span class="string">&#x27;lucky&#x27;</span>:<span class="number">6</span>, <span class="string">&#x27;how&#x27;</span>:<span class="number">7</span>, <span class="string">&#x27;?&#x27;</span>:<span class="number">8</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后将 batch 中的单词转为词典中的 index 序号，即 word2vec，batch 为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],[<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">4</span>]，[<span class="number">7</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">8</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>对长度不足的句子，进行填充。填充 PAD 假设序号是9，填充之后为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],[<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">4</span>],[<span class="number">7</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">8</span>,<span class="number">9</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以直接取词向量训练了吗?</p>
+<p><strong>不能！</strong>上面 batch 有3个样例，RNN 的每一步要输入 batch_size 中所有样例的相同索引号的单词，所以喂入 Bi_LSTM 的 batch 的维度应调整为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[seq_len, batch_size]</span><br></pre></td></tr></table></figure>
+
+<p><strong>怎么转换呢？</strong>利用 torchtext 的 Iterator 函数生成数据集迭代器即可转换，详见 torchtext 的使用方法。变换后，batch 变为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">0</span>,<span class="number">7</span>],[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>],[<span class="number">2</span>,<span class="number">5</span>,<span class="number">0</span>],[<span class="number">3</span>,<span class="number">6</span>,<span class="number">8</span>],[<span class="number">4</span>,<span class="number">4</span>,<span class="number">9</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>根据 nn.Embedding 的输入类型，batch 还要转成 LongTensor，作为向量层的输入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch = torch.LongTensor(batch)</span><br></pre></td></tr></table></figure>
+
+<p>利用 embedding 生产 batch 的词向量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">embed_batch = embed(batch)</span><br></pre></td></tr></table></figure>
+
+<p>假设 embedding_dim = 6，结果是（数是我抄的）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">tensor([[[-<span class="number">0.2699</span>,  <span class="number">0.7401</span>, -<span class="number">0.8000</span>,  <span class="number">0.0472</span>,  <span class="number">0.9032</span>, -<span class="number">0.0902</span>],</span><br><span class="line">         [-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [ <span class="number">0.1146</span>, -<span class="number">0.8077</span>, -<span class="number">1.4957</span>, -<span class="number">1.5407</span>,  <span class="number">0.3755</span>, -<span class="number">0.6805</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [ <span class="number">0.1146</span>, -<span class="number">0.8077</span>, -<span class="number">1.4957</span>, -<span class="number">1.5407</span>,  <span class="number">0.3755</span>, -<span class="number">0.6805</span>],</span><br><span class="line">         [-<span class="number">0.0387</span>,  <span class="number">0.8401</span>,  <span class="number">1.6871</span>,  <span class="number">0.3057</span>, -<span class="number">0.8248</span>, -<span class="number">0.1326</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.0387</span>,  <span class="number">0.8401</span>,  <span class="number">1.6871</span>,  <span class="number">0.3057</span>, -<span class="number">0.8248</span>, -<span class="number">0.1326</span>],</span><br><span class="line">         [-<span class="number">0.3745</span>, -<span class="number">1.9178</span>, -<span class="number">0.2928</span>,  <span class="number">0.6510</span>,  <span class="number">0.9621</span>, -<span class="number">1.3871</span>],</span><br><span class="line">         [-<span class="number">0.6739</span>,  <span class="number">0.3931</span>,  <span class="number">0.1464</span>,  <span class="number">1.4965</span>, -<span class="number">0.9210</span>, -<span class="number">0.0995</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [-<span class="number">0.7411</span>,  <span class="number">0.7948</span>, -<span class="number">1.5864</span>,  <span class="number">0.1176</span>,  <span class="number">0.0789</span>, -<span class="number">0.3376</span>],</span><br><span class="line">         [-<span class="number">0.3745</span>, -<span class="number">1.9178</span>, -<span class="number">0.2928</span>,  <span class="number">0.6510</span>,  <span class="number">0.9621</span>, -<span class="number">1.3871</span>]],</span><br><span class="line"></span><br><span class="line">        [[ <span class="number">0.2837</span>,  <span class="number">0.5629</span>,  <span class="number">1.0398</span>,  <span class="number">2.0679</span>, -<span class="number">1.0122</span>, -<span class="number">0.2714</span>],</span><br><span class="line">         [ <span class="number">0.2837</span>,  <span class="number">0.5629</span>,  <span class="number">1.0398</span>,  <span class="number">2.0679</span>, -<span class="number">1.0122</span>, -<span class="number">0.2714</span>],</span><br><span class="line">         [ <span class="number">0.2242</span>, -<span class="number">1.2474</span>,  <span class="number">0.3882</span>,  <span class="number">0.2814</span>, -<span class="number">0.4796</span>,  <span class="number">0.3732</span>]]],</span><br><span class="line">       grad_fn=&lt;EmbeddingBackward&gt;)</span><br></pre></td></tr></table></figure>
+
+<p>可以得出输出的维度为 [seq_len, batch_size, embedding_size]。</p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BiLSTM</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, embedding_dim, hidden_dim, n_layers</span>):</span>        </span><br><span class="line">        <span class="built_in">super</span>(BiLSTM_Attention, self).__init__()</span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.n_layers = n_layers</span><br><span class="line">        self.embedding = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        self.rnn = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=n_layers, bidirectional=<span class="literal">True</span>, dropout=<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        <span class="comment"># embedding: [seq_len, batch, embedding_dim]</span></span><br><span class="line">        embedding = self.dropout(self.embedding(x))</span><br><span class="line">        <span class="comment"># output: [seq_len, batch, hidden_dim*2] -&gt; [batch,seq_len, hidden_dim*2]</span></span><br><span class="line">        output, (hidden_state, cell_state) = self.rnn(embedding)</span><br><span class="line">        output = output.permute(<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+
+
+
+<p>度量学习</p>
+<p><img src="D:\markdown\images\image-20211118185929006.png" alt="image-20211118185929006"></p>
+<p><img src="D:\markdown\images\image-20211118190039010.png" alt="image-20211118190039010"></p>
+<p><img src="D:\markdown\images\image-20211118190148552.png" alt="image-20211118190148552"></p>
+<p><img src="D:\markdown\images\image-20211118190333360.png" alt="image-20211118190333360"></p>
+<p><img src="D:\markdown\images\image-20211118190411230.png" alt="image-20211118190411230"></p>
+<p>3500条，细粒度（九类），三个侮辱性等级</p>
+<ol>
+<li>文本相似度——欧氏距离 –&gt; </li>
+<li>有监督对比学习引入位置</li>
+</ol>
 
     </div>
 
@@ -319,13 +381,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/08/24/python_zhihu/" rel="prev" title="python爬取知乎回答并进行舆情分析：爬取数据部分">
-      <i class="fa fa-chevron-left"></i> python爬取知乎回答并进行舆情分析：爬取数据部分
+    <a href="/2021/09/19/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" rel="prev" title="排序（二）：分而治之：快速排序 && 归并排序">
+      <i class="fa fa-chevron-left"></i> 排序（二）：分而治之：快速排序 && 归并排序
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/09/19/IP%E5%92%8C%E7%AB%AF%E5%8F%A3/" rel="next" title="IP地址与端口">
-      IP地址与端口 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -385,7 +444,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AF%8D%E4%BA%91"><span class="nav-number">2.</span> <span class="nav-text">生成词云</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E9%A2%84%E5%A4%84%E7%90%86%EF%BC%88%E4%BD%BF%E7%94%A8%E5%81%9C%E7%94%A8%E8%AF%8D%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E8%AF%8D%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">文本预处理（使用停用词、自定义分词）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E8%AF%8D%E9%A2%91"><span class="nav-number">2.2.</span> <span class="nav-text">统计词频</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AF%8D%E4%BA%91-1"><span class="nav-number">2.3.</span> <span class="nav-text">生成词云</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8A%98%E7%BA%BF%E5%9B%BE"><span class="nav-number">3.</span> <span class="nav-text">折线图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E6%AF%8F%E6%97%A5%E5%9B%9E%E7%AD%94%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text">统计每日回答数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%8A%98%E7%BA%BF%E5%9B%BE"><span class="nav-number">3.2.</span> <span class="nav-text">生成折线图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B1%95%E6%9C%9B"><span class="nav-number">4.</span> <span class="nav-text">展望</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#torch-nn-Embedding-%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">torch.nn.Embedding() 原理及应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pytorch%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">pytorch函数调用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">调用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8"><span class="nav-number">2.1.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0"><span class="nav-number">2.1.2.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.3.</span> <span class="nav-text">成员函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E5%BD%A2%E7%8A%B6"><span class="nav-number">2.1.4.</span> <span class="nav-text">输入输出形状</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#embedding%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">embedding应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%90%E6%AD%A5%E8%A7%A3%E6%9E%90"><span class="nav-number">3.1.</span> <span class="nav-text">逐步解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text">应用</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
