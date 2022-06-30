@@ -21,14 +21,14 @@
 
   <meta name="description" content="利用Java语言实现两种简单的排序算法：插入排序和冒泡排序，并讨论它们的时间复杂度和优化方法。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="排序（一）：简单排序：插入排序 &amp;&amp; 冒泡排序">
+<meta property="og:title" content="排序（一）——简单排序：插入排序 &amp;&amp; 冒泡排序">
 <meta property="og:url" content="http://example.com/2021/09/19/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/index.html">
 <meta property="og:site_name" content="搬砖日志">
 <meta property="og:description" content="利用Java语言实现两种简单的排序算法：插入排序和冒泡排序，并讨论它们的时间复杂度和优化方法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/article/排序/insertsort.webp">
 <meta property="article:published_time" content="2021-09-19T11:18:45.087Z">
-<meta property="article:modified_time" content="2021-11-18T13:52:56.679Z">
+<meta property="article:modified_time" content="2022-01-03T12:49:58.358Z">
 <meta property="article:author" content="Lu JunYu">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="算法">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>排序（一）：简单排序：插入排序 && 冒泡排序 | 搬砖日志</title>
+  <title>排序（一）——简单排序：插入排序 && 冒泡排序 | 搬砖日志</title>
   
 
 
@@ -215,7 +215,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          排序（一）：简单排序：插入排序 && 冒泡排序
+          排序（一）——简单排序：插入排序 && 冒泡排序
         </h1>
 
         <div class="post-meta">
@@ -243,11 +243,11 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-11-18 21:52:56" itemprop="dateModified" datetime="2021-11-18T21:52:56+08:00">2021-11-18</time>
+                <time title="修改时间：2022-01-03 20:49:58" itemprop="dateModified" datetime="2022-01-03T20:49:58+08:00">2022-01-03</time>
               </span>
           
             <br/>
-            <span id="/2021/09/19/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/" class="post-meta-item leancloud_visitors" data-flag-title="排序（一）：简单排序：插入排序 && 冒泡排序" title="阅读次数">
+            <span id="/2021/09/19/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/" class="post-meta-item leancloud_visitors" data-flag-title="排序（一）——简单排序：插入排序 && 冒泡排序" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -272,7 +272,7 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>4.1k</span>
+              <span>4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -304,25 +304,21 @@
 <p><strong>插入排序的特点是：基于比较、数据移动完成排序，一次比较操作后不发生数据移动或仅仅交换一对相邻的数据元素。</strong></p>
 <h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> i,j;</span><br><span class="line">        <span class="keyword">for</span>(i = <span class="number">1</span>; i &lt; nums.length; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i] &lt; nums[i-<span class="number">1</span>])&#123;</span><br><span class="line">                <span class="keyword">int</span> temp = nums[i];</span><br><span class="line">                nums[i] = nums[i-<span class="number">1</span>];</span><br><span class="line">                <span class="keyword">for</span>(j = i-<span class="number">2</span>; j &gt;= <span class="number">0</span> &amp;&amp; nums[j] &gt; temp; j--)&#123;</span><br><span class="line">                    nums[j+<span class="number">1</span>] = nums[j];</span><br><span class="line">                &#125;</span><br><span class="line">                nums[j+<span class="number">1</span>] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h2><p>基于这样的过程我们很容易分析插入排序算法的最好情况和最坏情况。</p>
+<h2 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h2><p><strong>逆序</strong>：对于数对 $(\pi(i), \pi(j))$ ，有 $j &lt; j$ 而 $\pi(i)&gt;\pi(j)$ 。</p>
+<p><strong>插入排序的实质是消除数对的逆序</strong>，一个含有 n 个元素的序列有 $\frac{n(n-1)}{2}$ 个数对，则最多有 $\frac{n(n-1)}{2}$ 个逆序，平均有 $\frac{n(n-1)}{4}$ 个逆序，而插入排序在一次数对比较之后最后消除一对逆序。</p>
+<p>基于此，分析插入排序的最好情况 $B(n)$，平均情况 $A(n)$ 和最坏情况 $W(n)$。</p>
 <ul>
-<li>最好情况：元素升序有序。那么我们只需要进行 n-1 次元素比较，0次元素移动即可。</li>
-<li>最坏情况：元素降序有序。那么我们需要进行 $\frac{2}{n(n-1)}$ 次元素比较，同样次数的元素移动。</li>
-<li>平均时间复杂度：$A(n) \displaystyle \in O(n^2))$</li>
+<li>最好情况：元素升序有序。那么我们只需要进行 n-1 次元素比较，0 次元素移动即可，$B(n) \in O(n)$。</li>
+<li>最坏情况：元素降序有序。那么我们需要进行 $\frac{n(n-1)}{2}$ 次元素比较，同样次数的元素移动，$W(n) \displaystyle \in O(n^2)$。</li>
+<li>平均时间复杂度：平均比较 $\frac{n(n-1)}{4}$ 次，$A(n) \displaystyle \in O(n^2)$。 </li>
 </ul>
-<h2 id="代码优化"><a href="#代码优化" class="headerlink" title="代码优化"></a>代码优化</h2><p>插入排序的核心想法就是<strong>通过元素比较，消除逆序</strong>，这样就达到了排序的目的。而基于比较的排序算法，一次最多只能消除一对逆序关系，这样我们可以知道有多少对逆序，至少需要多少次比较。</p>
-<p>n个数据元素，降序有序，是最坏的逆序情况，逆序数量最多有n(n-1)/2个。所以，一个基于比较的排序算法，最坏情况下，需要 n(n-1)/2 次比较。<strong>所以最坏情况时间复杂度A(n)无法再改进了。</strong></p>
-<p>平均情况下，一个序列的逆序数量是不确定的，但是我们可以通过构造一个与原序列完全相反的序列，进而计算平均逆序数量。例如：有两个序列 x1 =(2, 4, 1, 5, 3) 和 x2 = (3, 5, 1, 4, 2)，这两个序列总逆序的数量等于 n(n-1)/2，则平均一个序列的逆序数量是 n(n-1)/4 个，那么平均情况也至少需要 n(n-1)/4 次比较操作。<strong>所以平均时间复杂度O(n)也没有将 n^2 降低的可能性。</strong></p>
-<p><strong>定理</strong>：任何一个基于关键字的比较且每一次比较最多消除一个逆序的排序算法，最坏的情况下至少比较 n(n-1)/2 次，平均情况至少比较 n(n-1)/4 次。</p>
+<h2 id="代码优化"><a href="#代码优化" class="headerlink" title="代码优化"></a>代码优化</h2><p><strong>定理</strong>：任何一个基于关键字的比较且每一次比较最多消除一个逆序的排序算法，最坏的情况下至少比较 $\frac{n(n-1)}{2}$ 次，平均情况至少比较 $\frac{n(n-1)}{4}$ 次。无法从 $O(n^2)$ 的复杂度降低。</p>
 <h1 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h1><h2 id="过程-1"><a href="#过程-1" class="headerlink" title="过程"></a>过程</h2><ul>
 <li>将待排序的数据元素的关键字顺次两两比较，若为逆序则将两个数据元素交换</li>
 <li><strong>将待排序的数据元素照此方法从头到尾处理一遍称作一趟起泡排序，它将关键字值最大的数据元素交换到排序的最终位置。</strong></li>
-<li><strong>若某一趟冒泡排序没发生任何数据元素的交换，则排序过程结束。</strong></li>
-<li>对含n个记录的文件排序最多需要n-1趟冒泡排序。</li>
+<li>对含 n 个记录的文件排序最多需要 n-1 趟冒泡排序。</li>
 </ul>
 <img src = "/images/article/排序/bubblesort.webp" alt="img" style="zoom:100%;">
-
-
 
 <h2 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; nums.length-i-<span class="number">1</span>; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &gt; nums[j+<span class="number">1</span>])&#123;</span><br><span class="line">                    <span class="keyword">int</span> temp = nums[j+<span class="number">1</span>];</span><br><span class="line">                    nums[j+<span class="number">1</span>] = nums[j];</span><br><span class="line">                    nums[j] = temp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -334,17 +330,17 @@
 <h2 id="代码优化-1"><a href="#代码优化-1" class="headerlink" title="代码优化"></a>代码优化</h2><p><strong>优化1：</strong>记下最后一次交换的位置，后边没有交换，必然是有序的，然后下一次排序从第一个比较到上次记录的位置结束即可。同时引入布尔变量 sorted 作为标记，如果在一趟排序中没有交换元素，说明这组数据已经有序，不用再继续下去。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> temp = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> LastExchangeIndex = <span class="number">0</span>;  <span class="comment">//上一次交换位置</span></span><br><span class="line">        <span class="keyword">int</span> border = nums.length-<span class="number">1</span>;  <span class="comment">//无序列表边界</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++)&#123;</span><br><span class="line">            <span class="keyword">boolean</span> sorted = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; border; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &gt; nums[j+<span class="number">1</span>])&#123;</span><br><span class="line">                    temp = nums[j+<span class="number">1</span>];</span><br><span class="line">                    nums[j+<span class="number">1</span>] = nums[j];</span><br><span class="line">                    nums[j] = temp;</span><br><span class="line">                    LastExchangeIndex = j;</span><br><span class="line">                    sorted = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(sorted)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            border = LastExchangeIndex;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><strong>优化2：</strong>双边界冒泡排序，见《计算机算法——设计与分析导论》习题4.5。以序列(2,3,4,5,1)为例，在普通冒泡排序下，需要盲目比较左侧有序子列，引入左侧边界解决这一问题：找到首个交换位置 pos，则下一趟冒泡排序的起始位置 border_left = pos - 1 or 0。</p>
+<p><strong>优化2：</strong>双边界冒泡排序，见《计算机算法——设计与分析导论》习题4.5。以序列(2,3,4,5,1) 为例，在普通冒泡排序下，需要盲目比较左侧有序子列，引入左侧边界解决这一问题：找到首个交换位置 pos，则下一趟冒泡排序的起始位置 border_left = pos - 1 or 0。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;        </span><br><span class="line">        <span class="comment">//双边界冒泡排序</span></span><br><span class="line">        <span class="keyword">int</span> FirstExchangeIndex = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> LastExchangeIndex = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> border_left = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> border_right = nums.length - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++)&#123;</span><br><span class="line">            <span class="keyword">boolean</span> sorted_left = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">boolean</span> sorted = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = border_left; j &lt; border_right; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &gt; nums[j+<span class="number">1</span>])&#123;</span><br><span class="line">                    <span class="comment">//记录首个交换的位置</span></span><br><span class="line">                    <span class="keyword">if</span>(sorted_left)&#123;</span><br><span class="line">                        border_left = j-<span class="number">1</span> &gt;= <span class="number">0</span> ? j-<span class="number">1</span>:<span class="number">0</span>;  <span class="comment">//左边界更新</span></span><br><span class="line">                        sorted_left = <span class="keyword">false</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">int</span> temp = nums[j];</span><br><span class="line">                    nums[j] = nums[j+<span class="number">1</span>];</span><br><span class="line">                    nums[j+<span class="number">1</span>] = temp;</span><br><span class="line">                    sorted = <span class="keyword">false</span>;</span><br><span class="line">                    LastExchangeIndex = j;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(sorted)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            border_right = LastExchangeIndex;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;        </span><br></pre></td></tr></table></figure>
 
 <p><strong>优化3：鸡尾酒排序</strong>，又称双向冒泡排序、搅拌排序。排序过程像钟摆一样，奇数轮从左到右，偶数轮从右到左。示意图如下：</p>
 <img src = "/images/article/排序/double_bubble.gif" alt="img" style="zoom:100%;">
 
-<p>鸡尾酒排序适用于基本有序的序列。还以序列(2,3,4,5,1)为例，鸡尾酒排序只需要访问一次序列就可以完成排序，但如果使用冒泡排序则需要四次。在乱数序列的状态下，鸡尾酒排序与冒泡排序的效率相当（都为O(n^2) ）。缺点是代码量较大。</p>
+<p>鸡尾酒排序适用于基本有序的序列。还以序列(2,3,4,5,1)为例，鸡尾酒排序只需要访问一次序列就可以完成排序，但如果使用冒泡排序则需要四次。在乱数序列的状态下，鸡尾酒排序与冒泡排序的效率相当（都为 $O(n^2)$ ）。缺点是代码量较大。</p>
 <ul>
-<li>最差时间复杂度 O(n^2) </li>
-<li>最优时间复杂度 O(n)</li>
-<li>平均时间复杂度 O(n^2)</li>
+<li>最差时间复杂度 $O(n^2)$ </li>
+<li>最优时间复杂度 $O(n)$</li>
+<li>平均时间复杂度 $O(n^2)$</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> border_right = nums.length - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> border_left = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> LastExchangeIndex_right = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> LastExchangeIndex_left = <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length/<span class="number">2</span>; i++)&#123;</span><br><span class="line">            <span class="comment">//正向</span></span><br><span class="line">            <span class="keyword">boolean</span> sorted = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; border_right; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &gt; nums[j+<span class="number">1</span>])&#123;</span><br><span class="line">                    <span class="keyword">int</span> temp = nums[j];</span><br><span class="line">                    nums[j] = nums[j+<span class="number">1</span>];</span><br><span class="line">                    nums[j+<span class="number">1</span>] = temp;</span><br><span class="line">                    LastExchangeIndex_right = j;</span><br><span class="line">                    sorted = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(sorted)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            border_right = LastExchangeIndex_right;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//反向</span></span><br><span class="line">            sorted = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = nums.length-<span class="number">1</span>-i; j &gt; border_left; j--)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[j-<span class="number">1</span>])&#123;</span><br><span class="line">                    <span class="keyword">int</span> temp = nums[j];</span><br><span class="line">                    nums[j] = nums[j-<span class="number">1</span>];</span><br><span class="line">                    nums[j-<span class="number">1</span>] = temp;</span><br><span class="line">                    LastExchangeIndex_left = j;</span><br><span class="line">                    sorted = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(sorted)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            border_left = LastExchangeIndex_left;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -367,8 +363,8 @@
       <i class="fa fa-chevron-left"></i> UDP传递字节数据
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/09/19/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" rel="next" title="排序（二）：分而治之：快速排序 && 归并排序">
-      排序（二）：分而治之：快速排序 && 归并排序 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/09/19/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" rel="next" title="排序（二）：分而治之——快速排序 && 归并排序">
+      排序（二）：分而治之——快速排序 && 归并排序 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -445,14 +441,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -478,6 +474,14 @@
         
         
           <li>
+            <a href="/2022/06/30/%E4%BB%8E%20one-hot%20%E5%88%B0%20BERT%20%E2%80%94%E2%80%94%20%E8%AF%8D%E5%B5%8C%E5%85%A5%E6%80%BB%E7%BB%93/" title="从 one-hot 到 BERT —— 词嵌入总结" target="_blank">从 one-hot 到 BERT —— 词嵌入总结</a>
+          </li>
+        
+          <li>
+            <a href="/2022/01/03/%E5%A0%86%E6%8E%92%E5%BA%8F/" title="排序（三）：谁主沉浮——堆与堆排序" target="_blank">排序（三）：谁主沉浮——堆与堆排序</a>
+          </li>
+        
+          <li>
             <a href="/2021/12/05/%E6%84%9F%E8%B0%A2%E8%B7%AF%E4%B8%8A%E7%9A%84%E6%AF%8F%E4%B8%80%E4%B8%AA%E4%BA%BA%E2%9D%A4/" title="第一篇小作文" target="_blank">第一篇小作文</a>
           </li>
         
@@ -486,15 +490,7 @@
           </li>
         
           <li>
-            <a href="/2021/09/19/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="排序（二）：分而治之：快速排序 && 归并排序" target="_blank">排序（二）：分而治之：快速排序 && 归并排序</a>
-          </li>
-        
-          <li>
-            <a href="/2021/09/19/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/" title="排序（一）：简单排序：插入排序 && 冒泡排序" target="_blank">排序（一）：简单排序：插入排序 && 冒泡排序</a>
-          </li>
-        
-          <li>
-            <a href="/2021/09/19/UDP/" title="UDP传递字节数据" target="_blank">UDP传递字节数据</a>
+            <a href="/2021/09/19/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="排序（二）：分而治之——快速排序 && 归并排序" target="_blank">排序（二）：分而治之——快速排序 && 归并排序</a>
           </li>
         
       </ul>
@@ -818,8 +814,8 @@ setInterval("createtime()",250);
 
 <div class="copyright">
   
-  &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -828,12 +824,12 @@ setInterval("createtime()",250);
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">32k</span>
+    <span title="站点总字数">37k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">29 分钟</span>
+    <span title="站点阅读时长">33 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
