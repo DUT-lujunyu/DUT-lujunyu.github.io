@@ -193,7 +193,7 @@
       </tags>
   </entry>
   <entry>
-    <title></title>
+    <title>从 one-hot 到 BERT —— 静态（fastText、GloVe）与动态（BERT）</title>
     <url>/2022/06/30/%E4%BB%8E%20one-hot%20%E5%88%B0%20BERT%20%E2%80%94%E2%80%94%20%E9%9D%99%E6%80%81%EF%BC%88fastText%E3%80%81GloVe%EF%BC%89%E4%B8%8E%E5%8A%A8%E6%80%81%EF%BC%88BERT%EF%BC%89/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="静态（fastText、GloVe）与动态（BERT）"><a href="#静态（fastText、GloVe）与动态（BERT）" class="headerlink" title="静态（fastText、GloVe）与动态（BERT）"></a>静态（fastText、GloVe）与动态（BERT）</h1><h2 id="fastText"><a href="#fastText" class="headerlink" title="fastText"></a>fastText</h2><h3 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h3><p>word2vec 没有直接利⽤构词学中的信息，将形态不同的单词⽤不同的向量来表⽰。例如，“dog”和“dogs”分别⽤两个不同的向量表⽰，而模型中并未直接表达这两个向量之间的关系，这种单词内部形态信息因为被转换成不同的id丢失了。</p>
 <p>鉴于此，fastText 提出了 <strong>子词嵌⼊(subword embedding)</strong> 的⽅法，将构词信息引⼊ word2vec 中。利用字符级别的 n-grams 来表示一个单词。</p>
@@ -252,7 +252,7 @@
       </tags>
   </entry>
   <entry>
-    <title>从 one-hot 到 BERT —— 词嵌入总结</title>
+    <title>从 one-hot 到 BERT —— 基本词嵌入方法总结</title>
     <url>/2022/06/30/%E4%BB%8E%20one-hot%20%E5%88%B0%20BERT%20%E2%80%94%E2%80%94%20%E8%AF%8D%E5%B5%8C%E5%85%A5%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="从-one-hot-到-BERT-——-词嵌入总结"><a href="#从-one-hot-到-BERT-——-词嵌入总结" class="headerlink" title="从 one-hot 到 BERT —— 词嵌入总结"></a>从 one-hot 到 BERT —— 词嵌入总结</h1><h2 id="词嵌入"><a href="#词嵌入" class="headerlink" title="词嵌入"></a>词嵌入</h2><p>词嵌入（word embedding）：把词映射为实数域向量的技术，从文本表示方法区分，主要分为<strong>离散表示</strong>和<strong>分布式表示</strong>。</p>
 <h2 id="离散表示"><a href="#离散表示" class="headerlink" title="离散表示"></a>离散表示</h2><h3 id="one-hot"><a href="#one-hot" class="headerlink" title="one-hot"></a>one-hot</h3><p>特征工程中常用，每一个特征（单词）都置为 0/1 独热编码，向量表示中只有该词为 1，其余都置为0，例如：</p>
