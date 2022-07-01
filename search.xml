@@ -1,74 +1,338 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>第一篇小作文</title>
-    <url>/2021/12/05/%E6%84%9F%E8%B0%A2%E8%B7%AF%E4%B8%8A%E7%9A%84%E6%AF%8F%E4%B8%80%E4%B8%AA%E4%BA%BA%E2%9D%A4/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote>
-<p><strong>题记</strong>：在写碎碎念这方面，我似乎是得到了老板的一些亲传的。就当做圈地自萌好啦。</p>
-</blockquote>
-<p>如果不是因为昨天午睡时间太长，导致大半夜说睡不着然后文思泉涌，这篇小作文本来是打算元旦那天写的，不过即写之则安之，开了个头就把它写完吧。</p>
-<h2 id="感谢路上的每一个人❤"><a href="#感谢路上的每一个人❤" class="headerlink" title="感谢路上的每一个人❤"></a>感谢路上的每一个人❤</h2><p>年底了，又快到了辞旧迎新的时刻。回首过去的一年，与许多老朋友挥手告别，也与许多新朋友打成一片。（此处略去煽情片段300字）</p>
-<p>还记得大四的时候，对自己的计算机研究生生活有些迷茫，不喜欢在深不可测的算法中扑腾，一度差点被本科导员游说去做兼职辅导员，可以说是黑历史了。但是，在三个月的成长中，每天都能发现自己一点一滴的进步，对自己的科研方向“网络不良言论检测”又比较感兴趣，（<strong>但还是希望明年老板能给我换个开心一点的课题，英文还好，中文垃圾评论真的受不了</strong>），无论最终成果如何，都乐于去进行一些尝试。局势在向好的方向发展，虽然依然是个小白，但是比起几个月前更有底气。希望在未来不要妄自菲薄，要相信自己有足够的勇气和头发应对生活的毒打（<strong>虽然头发好像有它们自己的想法</strong>😅）。</p>
-<center><img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206212137490.png" alt="论文" style="zoom:60%;" /> <br> <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">昨天看的一篇paper，最近都是这种奇奇怪怪的</div> </center>
+    <title>TCP传递字节数据和文件</title>
+    <url>/2021/09/19/TCP%E4%B8%8EUDP/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h1><h2 id="TCP传递字节数据"><a href="#TCP传递字节数据" class="headerlink" title="TCP传递字节数据"></a>TCP传递字节数据</h2><p>在 OutputStream 和 InputStream 的外面套用字节流管道ByteArrayIn(Out)putStream 实现文件的传输。</p>
+<p><img src="/images/article/image-20210915104325376.png" alt="image-20210915104325376"></p>
+<p><strong>注意：</strong>read()从输入流中读取下一个字节，若没有字节可读（也就是read()读到文件最后了），则返回-1。利用如下代码进行读取：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">while</span> ((len = is.read(buffer)) != -<span class="number">1</span>) &#123;</span><br><span class="line">    baos.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<br>
+<p><strong>服务端：</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">//服务端</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpServerDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">null</span>;</span><br><span class="line">        Socket socket = <span class="keyword">null</span>;</span><br><span class="line">        InputStream is = <span class="keyword">null</span>;</span><br><span class="line">        ByteArrayOutputStream baos = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 服务器地址</span></span><br><span class="line">            serverSocket = <span class="keyword">new</span> ServerSocket(<span class="number">9999</span>);</span><br><span class="line">            <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">// 等待客户端连接</span></span><br><span class="line">                socket = serverSocket.accept();</span><br><span class="line">                <span class="comment">// 读取消息</span></span><br><span class="line">                is = socket.getInputStream();</span><br><span class="line">                <span class="comment">// 利用管道流实现通讯</span></span><br><span class="line">                baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">                <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">                <span class="keyword">int</span> len;</span><br><span class="line">                <span class="keyword">while</span> ((len = is.read(buffer)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                    baos.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                System.out.println(baos.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// 关闭资源</span></span><br><span class="line">            <span class="keyword">if</span>(baos != <span class="keyword">null</span>)&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    baos.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">            略去is、socket、serversocket的关闭</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>感觉自己真的好幸运，遇到的每一个同学都很温柔。高中住校时，有几个可以站在阳台互诉自己暗恋的小姐姐的朋友，也有几个可以一起去厕所熬夜写作业的童鞋（虽然后来宵禁被禁止了）；大学时，总能约到一起干饭、一起自习、一起跑步、一起泡实验室（<strong>实际是在创院养老</strong>🍵）的志同道合的同志；而在研究生，虽然只有不到一个学期，但无论是寝室中朝夕相伴、耳鬓厮磨的舍友，亦或是实验室中报团取暖、唇齿相依的工友，又或是外表高冷内心呆萌时时投喂的师兄师姐们（<strong>这里的形容词用的怪怪的</strong>），都给我带来了很多快乐。</p>
-<p>身边的每个人都很努力，都有好多东西值得我去学习，这里有常常加班通宵的高中同学，也有奋战在科研一线的博士师兄，他们也会 emo，抱怨上天的不公，但是睡一大觉后，转头又重振旗鼓，直面生活的挑战。In a word，每个人都是伟大的战士，心里很感谢，看到他们，也想让自己变得更好。</p>
-<center><img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206212140774.jpg" alt="篮球场" style="zoom:60%;" /> <br> <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">傍晚时大黑楼前的篮球场</div> </center>
+<p><strong>客户端：</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">//客户端</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpClientDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        InetAddress serverIP = <span class="keyword">null</span>;</span><br><span class="line">        Socket socket = <span class="keyword">null</span>;</span><br><span class="line">        OutputStream os = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 获取服务器地址IP、端口号</span></span><br><span class="line">            serverIP = InetAddress.getByName(<span class="string">&quot;127.0.0.1&quot;</span>);</span><br><span class="line">            <span class="keyword">int</span> port = <span class="number">9999</span>;</span><br><span class="line">            <span class="comment">// 创建连接</span></span><br><span class="line">            socket = <span class="keyword">new</span> Socket(<span class="string">&quot;127.0.0.1&quot;</span>, port);</span><br><span class="line">            <span class="comment">// 发送消息</span></span><br><span class="line">            os = socket.getOutputStream();</span><br><span class="line">            os.write(<span class="string">&quot;你好，欢迎学习网络编程&quot;</span>.getBytes());</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/*关闭资源</span></span><br><span class="line"><span class="comment">            略去</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<br>
+<h2 id="TCP传递文件"><a href="#TCP传递文件" class="headerlink" title="TCP传递文件"></a>TCP传递文件</h2><p>文件在连接中以字节流形式传递。引入 FileOut(In)putStream.</p>
+<p><img src="/images/article/image-20210915104632382.png" alt="image-20210915104632382"></p>
+<p><strong>服务端：</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpServerDemo02</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// 服务器连接</span></span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">new</span> ServerSocket(<span class="number">9000</span>);</span><br><span class="line">        <span class="comment">//  监听</span></span><br><span class="line">        Socket socket = serverSocket.accept(); <span class="comment">//阻塞式监听，会一直等待客户端连接</span></span><br><span class="line">        <span class="comment">// 获取输入流</span></span><br><span class="line">        InputStream is = socket.getInputStream();</span><br><span class="line">        <span class="comment">// 文件输出</span></span><br><span class="line">        FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;receive.jpg&quot;</span>);</span><br><span class="line">        <span class="comment">//System.out.println(&quot;OK?&quot;);</span></span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> len;</span><br><span class="line">        <span class="keyword">while</span>((len = is.read(buffer)) != -<span class="number">1</span>)&#123;</span><br><span class="line">            fos.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 告知客户端接收完毕</span></span><br><span class="line">        OutputStream os = socket.getOutputStream();  <span class="comment">//如果不关掉连接，服务端始终监听</span></span><br><span class="line">        os.write(<span class="string">&quot;我已经接收完毕了&quot;</span>.getBytes());</span><br><span class="line">        <span class="comment">// 关闭资源</span></span><br><span class="line">        os.close();;</span><br><span class="line">        fos.close();</span><br><span class="line">        is.close();</span><br><span class="line">        socket.close();</span><br><span class="line">        serverSocket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>感谢老板，给我足够高的自由度，让我可以按照自己的状态自由修（mo）炼（🐟），头一晚失眠的话第二天可以赖（tang）床（shi），每次找他一边听他满面春风讲着互联网的方兴未艾和人口红利，一遍感慨导的豁达乐观和<strong>头发茂密</strong>；感谢小导，总是温和耐心地提出指点和建议，还帮我们淸点发票，上一秒正说着方法和模型，下一秒说起了冷笑话。许多时候，感受更多的不是老师们的能力本身，而是他们为人处世的方法和态度。</p>
-<p>11月发生了许多小事：<strong>比如说</strong>，在参与校园三行情诗（本科生）的活动后，又把该周的算法作业发到了三行诗主办的邮箱里，感谢管理邮箱的学弟的提醒，重新向老师发送了作业，正如 ky 哥哥所说的那样：还好，你没把情诗发给老师；<strong>再比如</strong>，参加 CCIR 结果记错英语课补课的时间，感觉 gg 了，怀着坎坷的心情向老师连声道歉，换来一句：没关系，可以理解，不用补了🤗🤭；<strong>又比如</strong>，昨天洗澡的时候不小心把耳机掉在了地上，以为钻进了放衣柜与地砖间的缝隙，被大爷注意到我的窘状，拿着一个小棍帮我捅，想把它找到，耽误大爷和周围的同学好久也没有找到，连声道歉添麻烦了，大爷说没事没事，去一楼吹头后出来，迎面碰到大爷，笑着说：正找你呢，掉到下面同学的柜子里了。</p>
-<center><img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206212137882.jpg" alt="耳机" style="zoom:60%;" /> <br> <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">我多灾多难的耳机</div> </center>
+<p><strong>客户端：</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpClientDemo02</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        <span class="comment">// 创建链接</span></span><br><span class="line">        Socket socket = <span class="keyword">new</span> Socket(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">9000</span>);</span><br><span class="line">        <span class="comment">// 创建输出流</span></span><br><span class="line">        OutputStream os = socket.getOutputStream();</span><br><span class="line">        <span class="comment">// 文件流</span></span><br><span class="line">        FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="keyword">new</span> File(<span class="string">&quot;test.jpg&quot;</span>));</span><br><span class="line">        <span class="comment">// 写出文件</span></span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> len;</span><br><span class="line">        <span class="keyword">while</span>((len = fis.read(buffer)) != -<span class="number">1</span>)&#123;</span><br><span class="line">            os.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//通知服务器已经传输完毕</span></span><br><span class="line">        socket.shutdownOutput();</span><br><span class="line">        <span class="comment">//System.out.println(&quot;Has sent!&quot;);</span></span><br><span class="line">        <span class="comment">//确定服务器接收完毕，断开连接</span></span><br><span class="line">        InputStream is = socket.getInputStream();</span><br><span class="line">        ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        <span class="keyword">byte</span>[] buffer2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> len2;</span><br><span class="line">        <span class="keyword">while</span>((len2 = is.read(buffer2)) != -<span class="number">1</span>)&#123;</span><br><span class="line">            baos.write(buffer2, <span class="number">0</span>, len2);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(baos.toString());</span><br><span class="line">        <span class="comment">// 关闭</span></span><br><span class="line">        baos.close();</span><br><span class="line">        is.close();</span><br><span class="line">        fis.close();</span><br><span class="line">        os.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<br>
-
-<p>有时，看着 i 大工的“我赞赞我吐槽”，心里挺不是滋味的。大学四年，从老师到同学，再到许多生活中的“小人物”，都从学业和生活上给予了我很大的帮助，像上面的温暖也有很多很多，真心希望大工能够越来越好。</p>
-<p>上周睡觉梦到家中长辈忽然去世了，梦里哭了好久。之后说完，笑着安慰我这是吉兆，让我去周易☯上查查，一查发现是增寿的预兆，好开心（<strong>不过作为坚定的唯物主义者，我们应该远离迷信</strong>）。越长大越发现，父母和家人的付出是最容易被忽视的，也渐渐明白了什么叫<strong>“子欲养而亲不待”</strong>，渐渐把一些发给同龄人的可爱表情包发给他们，多和他们说说话。感谢他们无论风雨永远站在自己身边。</p>
-<p>感谢一路上的每一个人❤，包容我的任性和坏脾气；也感谢自己，一直坚持着走下去~</p>
-<p>（<strong>第一节结束，渲染的气氛有些凝重了，淦啊。所以第二节要写得跳脱一些！</strong>）</p>
-<h2 id="为未来画一张大饼🍪（这好像是个曲奇）"><a href="#为未来画一张大饼🍪（这好像是个曲奇）" class="headerlink" title="为未来画一张大饼🍪（这好像是个曲奇）"></a>为未来画一张大饼🍪（这好像是个曲奇）</h2><p>记得本科开学典礼上，一位老师讲大学生要<strong>“为天地立心，为生民立命，为往圣继绝学，为万世开太平”</strong>，当时在下面觉得，这个理想似乎有些宏伟，以自己脆弱的红条和蓝条恐怕难以实施。但是，正如《奈克瑟斯奥特曼》中说的那样：<strong>光是纽带，光是传承</strong>。因为感受到了光，所以也想把光分享给需要的人。很天真，但是我现在依然这样想。虽然如此，但是也渐渐明白，不谈面包谈理想终究是镜花水月。</p>
-<p>因此，在这一节，本着<strong>“穷则独自躺平，达则兼济左右”</strong>的基本原则，结合自身的实际状况，做出相关假设，并对未来画一张大饼🍪。</p>
-<p><strong>已知</strong>：</p>
-<ul>
-<li>ljy 比较自律，具备一定的学习能力，喜欢与身边的童鞋讨论奇奇怪怪的问题；</li>
-<li>ljy 比较佛系且喜欢养生，但会对自己感兴趣以及想做的事蜜汁认真和执着；</li>
-<li>相比于有硬性绩效要求的考核机制，ljy 更喜欢依靠自驱力（或者执念）做些自己喜欢的工作；</li>
-<li>目前，高薪对的 ljy 的吸引力一般，这可能是因为目前膝下没有儿女且父母身体比较健康，以及未来并不想在一线城市定居的缘故。</li>
-</ul>
-<p>根据已知条件，做出如下假设：</p>
-<p><strong>假设：</strong></p>
-<ul>
-<li>比起算法 or 开发程序🙉，读博之后从教对 ljy 的吸引力更大；</li>
-<li>比起程序🙉 or 选调生，ljy 更适合读博；</li>
-<li>ljy 会继续利用研一剩余的时间，判断自己是否适合读博。</li>
-</ul>
-<p>基于以上假设，对未来生活画出第一张大饼，记作 $dabing1$：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">dabing1:</span><br><span class="line">begin:</span><br><span class="line">    <span class="keyword">if</span> 研究生阶段ljy顺利毕业:</span><br><span class="line">        <span class="keyword">if</span> ljy对读博有强烈意愿:</span><br><span class="line">            <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">            虚位以待</span></span><br><span class="line"><span class="string">            &#x27;&#x27;&#x27;</span></span><br><span class="line">            找个教职教书育人，和学生讨论问题；同时，找一个女孩，说服她和自己一起还房贷；教书回家早就做做饭，晚上辅导孩子作业题；如果有心，也有进军工业界的可能。</span><br><span class="line">        <span class="keyword">elif</span> ljy还在读博和上班之间举棋不定:</span><br><span class="line">            去上班<span class="number">1</span>~<span class="number">2</span>年</span><br><span class="line">            <span class="keyword">if</span> 觉得上班真的不适合自己:</span><br><span class="line">                <span class="keyword">if</span> 读博之心不死:</span><br><span class="line">                    读博</span><br><span class="line">                    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">                    虚位以待</span></span><br><span class="line"><span class="string">                    &#x27;&#x27;&#x27;</span></span><br><span class="line">                    找个教职教书育人，和学生讨论问题；同时，找一个女孩，说服她和自己一起还房贷，回家做饭辅导孩子作业题；也不乏有重返工业界的可能。</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    回北方某个城市的初中教物理（高中生升学压力，小学生..，感觉初中生好管理一点？）</span><br><span class="line">                    找一个女孩，说服她和自己一起还房贷；下班回家做饭辅导孩子作业题</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                干！</span><br><span class="line">                <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">                虚位以待</span></span><br><span class="line"><span class="string">                &#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        目前来看，应该不会有这种<span class="keyword">else</span></span><br><span class="line">end.</span><br></pre></td></tr></table></figure>
-
-<p>根据以上大饼，我们发现：<strong>woc，怎么就还房贷那里比较清晰（其实也不咋清晰）呢，这可不行啊。</strong>略一沉吟，画出第二张大饼🍪，记作 $dabing2$：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">dabing2:</span><br><span class="line">begin:</span><br><span class="line">    干肝淦！</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    虚位以待</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">end.</span><br></pre></td></tr></table></figure>
-
-<p>相比于 $dabing1$，$dabing2$ 具有更强的泛化能力，对不同的情况能够尽快作出调整，一定程度上解决了长距离依赖的问题；同时目标明确，减少了不必要的脑细胞死亡，整体性能更为优越，鹅美净啊(*^$_▽$^*)  </p>
-<p><strong>毕竟，不能让已知和假设限制自己的思维，ZERO就是要有无限的可能性。</strong></p>
-<p>以上就是对未来画的一张大饼，也欢迎大家在留言区画出自己的大饼~</p>
-<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>啰里啰嗦说了一堆，有点写不动了o(╥﹏╥)o。如果你看到了这里，也谢谢你能够接受一个失眠患者的碎碎念。</p>
-<p><strong>希望几年后的自己，看着今天感激的人、谋划的饼，能够心中无悔；也希望每个人都能找到自己努力的方向和节奏，做最好的自己</strong>。</p>
-<p>看一眼字数统计，不想再思考了，就以本科毕设的致谢和《共产党宣言》最后一段作为小作文的结尾叭~</p>
-<center><B><I>虽长路漫漫，亦载笑载歌，烟雨任平生。</I></B></center>
-
-<center><B><I>全世界无产者，联合起来！</I></B></center>
-
-<br>
-
-<blockquote>
-<p><strong>题记</strong>：感觉现在写作文没有高中时代那种汪洋恣肆、挥斥方遒的劲了，越来越像小学生写日记，好像还是小女生😅</p>
-</blockquote>
 ]]></content>
       <tags>
-        <tag>blog</tag>
+        <tag>Java</tag>
+        <tag>网络编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>IP地址与端口</title>
+    <url>/2021/09/19/IP%E5%92%8C%E7%AB%AF%E5%8F%A3/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h1><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p><strong>IP地址的作用</strong>：唯一定位网络上的计算机。</p>
+<p><strong>IP地址分类</strong>：</p>
+<p>从网际协议版本上：</p>
+<table>
+<thead>
+<tr>
+<th>协议版本</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IPv4</td>
+<td>127.0.0.1<br/>32位，4个字节组成，每个数字范围0~255，约42亿个<br/>2011年已用尽</td>
+</tr>
+<tr>
+<td>IPv6</td>
+<td>fe80::f468:b07b:9f96:bdca%2<br/>128位（8个无符号整数）</td>
+</tr>
+</tbody></table>
+<p>从接入方式上：</p>
+<table>
+<thead>
+<tr>
+<th>接入方式</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>公网（互联网）</td>
+<td>计算机得到的IP地址互联网上的非保留地址</td>
+</tr>
+<tr>
+<td>私网（局域网）</td>
+<td>192.168.<em>.</em><br/>指在某一区域内由多台计算机互联成的计算机组，<strong>分为ABCD…类</strong></td>
+</tr>
+</tbody></table>
+<p><strong>域名的作用</strong>：记忆IP</p>
+<h2 id="命令行查看IP地址"><a href="#命令行查看IP地址" class="headerlink" title="命令行查看IP地址"></a>命令行查看IP地址</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ipconfig  <span class="comment">#查看ip</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="InetAddress"><a href="#InetAddress" class="headerlink" title="InetAddress"></a>InetAddress</h2><p>InetAddress：此类表示Internet协议（IP）地址。 <strong>注意：</strong>InetAddress构造方法私有，只能通过其他成员函数新建对象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.UnknownHostException;</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试IP</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestIDAddress</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//getByName:根据提供的主机名和IP地址创建 InetAddress</span></span><br><span class="line">            <span class="comment">//查询本机地址</span></span><br><span class="line">            InetAddress inetAddress1 = InetAddress.getByName(<span class="string">&quot;127.0.0.1&quot;</span>);</span><br><span class="line">            System.out.println(inetAddress1);</span><br><span class="line">            InetAddress inetAddress2 = InetAddress.getByName(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">            System.out.println(inetAddress2);</span><br><span class="line">            InetAddress inetAddress3 = InetAddress.getLocalHost();</span><br><span class="line">            System.out.println(inetAddress3);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//查询网络地址</span></span><br><span class="line">            InetAddress inetAddress4 = InetAddress.getByName(<span class="string">&quot;www.baidu.com&quot;</span>);</span><br><span class="line">            System.out.println(inetAddress4);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//常用方法</span></span><br><span class="line">            System.out.println(inetAddress4.getAddress());  <span class="comment">//返回此 InetAddress对象的原始IP地址。</span></span><br><span class="line">            System.out.println(inetAddress4.getCanonicalHostName());  <span class="comment">//获取此IP地址的完全限定域名(规范的名字——ip)</span></span><br><span class="line">            System.out.println(inetAddress4.getHostAddress());  <span class="comment">//ip</span></span><br><span class="line">            System.out.println(inetAddress4.getHostName());  <span class="comment">//获取此IP地址的主机名/域名</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnknownHostException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong></p>
+<p>输出结果我们发现：使用 getLocalHost() 方法输出的结果是本机配置的IPv4，而 getByName(“localhost”) 和 getByName(“127.0.0.1”)的输出结果为 127.0.0.1，二者不同。</p>
+<p>引出问题：<a href="https://blog.csdn.net/ithover/article/details/78916998?utm_medium=distribute.pc_relevant.none-task-blog-2~default~essearch~vector-6.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~essearch~vector-6.no_search_link">localhost、127.0.0.1 和 本机IP 三者的区别</a></p>
+<h3 id="配置映射地址"><a href="#配置映射地址" class="headerlink" title="*配置映射地址"></a>*配置映射地址</h3><p>在C:\Windows\System32\drivers\etc\hosts文件下可以配置127.0.0.1的映射地址。格式示例：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">127.0.0.1	www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<h1 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h1><h2 id="基础知识-1"><a href="#基础知识-1" class="headerlink" title="基础知识"></a>基础知识</h2><p><strong>端口的作用</strong>：区分不同应用进程间的网络通信和连接，规定为0 ~ 65535。TCP/UDP：65535 * 2 ，单个协议下，端口号不能冲突。</p>
+<p><strong>通信三要素</strong>：通信的目的IP地址、使用的传输层协议(TCP 或 UDP)和使用的端口号。</p>
+<p><strong>端口分类</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>种类</th>
+<th align="left">示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>公有端口0 ~ 1023</td>
+<td align="left">HTTP：80<br/>    HTTPS：443<br/>    FTP：21<br/>    Telent：23</td>
+</tr>
+<tr>
+<td>程序注册端口：1024 ~ 49151<br/>分配给用户或者程序</td>
+<td align="left">Tomcat：8080<br/>    MySQL：3306<br/>    Oracle：1512</td>
+</tr>
+<tr>
+<td>动态、私有：49152 ~ 65535</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h2 id="命令行查看端口信息"><a href="#命令行查看端口信息" class="headerlink" title="命令行查看端口信息"></a>命令行查看端口信息</h2><p>win+R打开命令行，输入以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">netstat -ano  <span class="comment">#查看所有的端口</span></span><br><span class="line">netstat -ano | findstr <span class="string">&quot;5900&quot;</span>  <span class="comment">#查看指定的端口</span></span><br><span class="line">tasklist | findstr <span class="string">&quot;8696&quot;</span>  <span class="comment">#查看指定端口的进程</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="InetSocketAddress"><a href="#InetSocketAddress" class="headerlink" title="InetSocketAddress"></a>InetSocketAddress</h2><p>InetSocketAddress：该类实现IP套接字地址<em><strong>IP地址+端口号</strong></em>，也可以是<em><strong>主机名+端口号</strong></em>，在这种情况下将尝试解析主机名。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.InetSocketAddress;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestInetSocketAddress</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        InetSocketAddress socketAddress = <span class="keyword">new</span> InetSocketAddress(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">8080</span>);</span><br><span class="line">        System.out.println(socketAddress);</span><br><span class="line"></span><br><span class="line">        System.out.println(socketAddress.getAddress());  <span class="comment">//获得 InetAddress / IP地址</span></span><br><span class="line">        System.out.println(socketAddress.getHostName());</span><br><span class="line">        System.out.println(socketAddress.getPort());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>网络编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UDP传递字节数据</title>
+    <url>/2021/09/19/UDP/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h1><p>UDP传递数据不要连接，知道对方地址即可。</p>
+<h2 id="UDP传递字节数据"><a href="#UDP传递字节数据" class="headerlink" title="UDP传递字节数据"></a>UDP传递字节数据</h2><p><strong>客户端：</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson3;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.DatagramPacket;</span><br><span class="line"><span class="keyword">import</span> java.net.DatagramSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UdpClientDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        <span class="comment">// 创建一个socket</span></span><br><span class="line">        DatagramSocket socket = <span class="keyword">new</span> DatagramSocket();</span><br><span class="line">        <span class="comment">// 新建一个包</span></span><br><span class="line">        String msg = <span class="string">&quot;Hello world!&quot;</span>;</span><br><span class="line">        <span class="comment">// 确定接受端ip和接口</span></span><br><span class="line">        InetAddress localhost = InetAddress.getByName(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">9000</span>;</span><br><span class="line">        DatagramPacket packet = <span class="keyword">new</span> DatagramPacket(msg.getBytes(), <span class="number">0</span>, msg.length(), localhost, <span class="number">9000</span>); ;</span><br><span class="line"></span><br><span class="line">        socket.send(packet);</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>服务端：</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson3;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.DatagramPacket;</span><br><span class="line"><span class="keyword">import</span> java.net.DatagramSocket;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UdpServerDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//创建socket</span></span><br><span class="line">        DatagramSocket socket = <span class="keyword">new</span> DatagramSocket(<span class="number">9000</span>);</span><br><span class="line">        <span class="comment">//buffer</span></span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        DatagramPacket packet = <span class="keyword">new</span> DatagramPacket(buffer, <span class="number">0</span>, buffer.length);</span><br><span class="line">        socket.receive(packet);</span><br><span class="line">        <span class="comment">// getAddress: 返回此InetAddress对象的原始IP地址。 getHostAddress: 返回文本显示中的IP地址字符串。</span></span><br><span class="line">        System.out.println(packet.getAddress().getHostAddress());</span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(packet.getData(), <span class="number">0</span>, packet.getLength()));</span><br><span class="line"></span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>网络编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2021/08/23/hello-world/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+      <tags>
+        <tag>博客相关</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python爬取知乎回答并进行舆情分析：爬取数据部分</title>
+    <url>/2021/08/24/python_zhihu/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~</p>
+<h1 id="Ajax原理介绍"><a href="#Ajax原理介绍" class="headerlink" title="Ajax原理介绍"></a>Ajax原理介绍</h1><p>利用google浏览器打开知乎中任意问题（本文中示例问题为 <a href="https://www.zhihu.com/question/482094335/answer/2080599564"><strong>如何看待天府少年团改名熊猫少儿艺术团，公司称「不做饭圈文化，没有资本运作，爱舞台的孩子做有意义的事」？</strong></a>），发现知乎采取动态加载技术，内容块只有在浏览器下滚时才会刷新。与微博和贴吧不同，知乎的html文件中没有“下一页”的相关节点，无法直接解析。因此需要从原始的Request报文着手，获取文本数据。</p>
+<p><strong>Ajax</strong>(Asynchronous Java and XML的缩写)是一种异步请求数据的web开发技术，能够改善用户的体验，提高页面性能。</p>
+<p>Ajax的工作原理相当于在用户和服务器之间加了—个中间层(<strong>XHR</strong>)，使用户操作与服务器响应异步化。并不是所有的用户请求都提交给服务器,像—些数据验证和数据处理等都交给XHR自己来做, 只有确定需要从服务器读取新数据时再由XHR代为向服务器提交请求，示意图如下：<br><img src="https://img-blog.csdnimg.cn/3bca656242a84d8298a4ff0bd00e5545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">在本次爬虫中，利用Ajax技术获取服务器发往浏览器的原始报文。</p>
+<h1 id="Request-URL分析"><a href="#Request-URL分析" class="headerlink" title="Request URL分析"></a>Request URL分析</h1><p>F12进入开发者模式，进入<strong>Network</strong>界面，选择<strong>Fetch/XML</strong>，可以看到各个请求的相关信息。<br><img src="https://img-blog.csdnimg.cn/47792da2a6624b3fbdd1e40154b74437.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">选择其中answers?开头的请求，观察<strong>Request URL</strong>。注意到有两个字段，<strong>offset</strong> 和 <strong>limit</strong>，其中 <strong>offset</strong> 指的是报文中第一个回答对应的索引号（从0开始），<strong>limit</strong> 指的是一条报文中能够包含的最多的回答数。用户可以在URL定义这两个值。</p>
+<p><strong>在设定时应当注意</strong>：<br>offset 不能超过回答总数 - 1；<br>limit 不能超过上限。<br><img src="https://img-blog.csdnimg.cn/f1643c2ade5e471d8c2ef3c485af50ea.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">为了便于观察json数据报格式，将 limit 设定为1，复制以下URL即可查看json报文信息。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">https://www.zhihu.com/api/v4/questions/<span class="number">482094335</span>/answers?include=data%5B*%5D.is_normal%2Cadmin_closed_comment%2Creward_info%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cattachment%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelevant_info%2Cquestion%2Cexcerpt%2Cis_labeled%2Cpaid_info%2Cpaid_info_content%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cis_recognized%3Bdata%5B*%5D.mark_infos%5B*%5D.url%3Bdata%5B*%5D.author.follower_count%2Cvip_info%2Cbadge%5B*%5D.topics%3Bdata%5B*%5D.settings.table_of_content.enabled&amp;offset=<span class="number">0</span>&amp;limit=<span class="number">1</span>&amp;sort_by=default&amp;platform=desktop</span><br></pre></td></tr></table></figure>
+
+<h1 id="json报文结构分析"><a href="#json报文结构分析" class="headerlink" title="json报文结构分析"></a>json报文结构分析</h1><p>下面对json报文进行结构分析，报文主要分为两部分：<strong>“data”</strong> 和 <strong>“page”</strong>。<br>data：包含 html 文本数据，本次爬虫重点关注以下字段：</p>
+<table>
+<thead>
+<tr>
+<th align="center">字段</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">author -&gt; name</td>
+<td align="center">用户名</td>
+</tr>
+<tr>
+<td align="center">author -&gt; url_token</td>
+<td align="center">用户token</td>
+</tr>
+<tr>
+<td align="center">content</td>
+<td align="center">回答</td>
+</tr>
+<tr>
+<td align="center">updated_time</td>
+<td align="center">回答时间</td>
+</tr>
+<tr>
+<td align="center">voteup_count</td>
+<td align="center">赞同数量</td>
+</tr>
+<tr>
+<td align="center">comment_count</td>
+<td align="center">评论数量</td>
+</tr>
+</tbody></table>
+<p><strong>说明：</strong><br><strong>用户token是用户的唯一识别标志</strong>，“<a href="https://www.zhihu.com/people/%E2%80%9D">https://www.zhihu.com/people/”</a> + url_token 为该用户知乎主页；<br><strong>报文中的时间都是时间戳</strong>，需要转化为 “年-月-日 时-分-秒” 的形式。</p>
+<p>page：记录是否已经是该问题下的最后一个回答。如果字段 <strong>is_end = true</strong>，则可以结束请求。</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>引包：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> csv</span><br><span class="line"><span class="keyword">import</span> codecs <span class="comment">#解决乱码</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> pyquery <span class="keyword">import</span> PyQuery <span class="keyword">as</span> pq</span><br></pre></td></tr></table></figure>
+
+<p>请求头和URL：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 请求头</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Request URL</span></span><br><span class="line">base_url = <span class="string">&quot;https://www.zhihu.com/api/v4/questions/482094335/answers?&quot;</span></span><br><span class="line">include = <span class="string">&quot;data%5B%2A%5D.is_normal%2Cadmin_closed_comment%2Creward_info%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cattachment%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelevant_info%2Cquestion%2Cexcerpt%2Cis_labeled%2Cpaid_info%2Cpaid_info_content%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cis_recognized%3Bdata%5B%2A%5D.mark_infos%5B%2A%5D.url%3Bdata%5B%2A%5D.author.follower_count%2Cvip_info%2Cbadge%5B%2A%5D.topics%3Bdata%5B%2A%5D.settings.table_of_content.enabled&quot;</span></span><br></pre></td></tr></table></figure>
+<p>获得页面：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 获得页面</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_page</span>(<span class="params">offset</span>):</span></span><br><span class="line">    page_url = <span class="string">&#x27;include=&#x27;</span> + include + <span class="string">&#x27;&amp;limit=5&amp;&#x27;</span> + <span class="string">&#x27;offset=&#x27;</span> + <span class="built_in">str</span>(offset) + <span class="string">&#x27;&amp;platform=desktop&amp;sort_by=default&#x27;</span></span><br><span class="line">    url = base_url + page_url</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.get(url, headers=headers)</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">            <span class="keyword">return</span> response.json()</span><br><span class="line">    <span class="keyword">except</span> requests.ConnectionError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Error&#x27;</span>, e.args)</span><br></pre></td></tr></table></figure>
+<p>时间转换：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 时间戳转化为年-月-日 时-分-秒</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">TimeStampToTime</span>(<span class="params">timestamp</span>):</span></span><br><span class="line">    timeStruct = time.localtime(timestamp)</span><br><span class="line">    <span class="keyword">return</span> time.strftime(<span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>, timeStruct)</span><br></pre></td></tr></table></figure>
+<p>解析页面：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 解析网页</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse_page</span>(<span class="params">json</span>):</span></span><br><span class="line">    <span class="keyword">if</span> json:</span><br><span class="line">        items = json.get(<span class="string">&#x27;data&#x27;</span>)</span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> items:  <span class="comment"># items: 一条报文中的所有回答 </span></span><br><span class="line">            zhihu = &#123;&#125;</span><br><span class="line">            zhihu[<span class="string">&#x27;作者&#x27;</span>] = item.get(<span class="string">&#x27;author&#x27;</span>).get(<span class="string">&#x27;name&#x27;</span>)</span><br><span class="line">            zhihu[<span class="string">&#x27;user_token&#x27;</span>] = item.get(<span class="string">&#x27;author&#x27;</span>).get(<span class="string">&#x27;url_token&#x27;</span>)</span><br><span class="line">            zhihu[<span class="string">&#x27;回答&#x27;</span>] = pq(item.get(<span class="string">&#x27;content&#x27;</span>)).text()</span><br><span class="line">            zhihu[<span class="string">&#x27;创建时间&#x27;</span>] = TimeStampToTime(item.get(<span class="string">&#x27;updated_time&#x27;</span>))</span><br><span class="line">            zhihu[<span class="string">&#x27;赞同数&#x27;</span>] = item.get(<span class="string">&#x27;voteup_count&#x27;</span>)</span><br><span class="line">            zhihu[<span class="string">&#x27;评论数&#x27;</span>] = item.get(<span class="string">&#x27;comment_count&#x27;</span>)</span><br><span class="line">            <span class="keyword">yield</span> zhihu</span><br></pre></td></tr></table></figure>
+<p>主函数执行：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    i = <span class="number">0</span>  </span><br><span class="line">    f = codecs.<span class="built_in">open</span>(<span class="string">&#x27;test.csv&#x27;</span>, <span class="string">&#x27;w+&#x27;</span>, <span class="string">&#x27;utf_8_sig&#x27;</span>)</span><br><span class="line">    f_txt = <span class="built_in">open</span>(<span class="string">&#x27;test.txt&#x27;</span>, <span class="string">&#x27;w+&#x27;</span>, encoding=<span class="string">&#x27;utf_8&#x27;</span>)</span><br><span class="line">    fieldnames = [<span class="string">&#x27;作者&#x27;</span>, <span class="string">&#x27;user_token&#x27;</span>, <span class="string">&#x27;回答&#x27;</span>, <span class="string">&#x27;创建时间&#x27;</span>, <span class="string">&#x27;赞同数&#x27;</span>, <span class="string">&#x27;评论数&#x27;</span>]</span><br><span class="line">    writer = csv.DictWriter(f, fieldnames=fieldnames)</span><br><span class="line">    writer.writeheader()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        js = get_page(i*<span class="number">5</span>)  <span class="comment"># 根据报文首个回答对应的索引值获取页面</span></span><br><span class="line">        results = parse_page(js)</span><br><span class="line">        <span class="keyword">for</span> res <span class="keyword">in</span> results:</span><br><span class="line">            writer.writerow(res)</span><br><span class="line">            <span class="keyword">for</span> detail <span class="keyword">in</span> res.values():</span><br><span class="line">                f_txt.write(<span class="built_in">str</span>(detail) + <span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">            f_txt.write(<span class="string">&#x27;\n&#x27;</span> + <span class="string">&#x27;*&#x27;</span> * <span class="number">50</span> + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 分隔符</span></span><br><span class="line">        <span class="keyword">if</span> js.get(<span class="string">&#x27;paging&#x27;</span>).get(<span class="string">&#x27;is_end&#x27;</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;finish!&#x27;</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    f.close()</span><br><span class="line">    f_txt.close()</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://blog.csdn.net/m0_37969932/article/details/116330217?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162969083416780261967528%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=162969083416780261967528&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-116330217.ecpm_v1_rank_v29&utm_term=%E7%9F%A5%E4%B9%8E%E7%88%AC%E8%99%AB&spm=1018.2226.3001.4187">2021年知乎爬虫</a></p>
+<p><a href="https://blog.csdn.net/weixin_45019310/article/details/89923644?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162977091516780255228188%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=162977091516780255228188&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-89923644.pc_search_download_positive&utm_term=%E7%9F%A5%E4%B9%8Eajax&spm=1018.2226.3001.4187">python爬虫——关于ajax加载之爬取2019年知乎问题和描述</a></p>
+<p><a href="https://www.sohu.com/a/238246281_100109711">Ajax原理</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>爬虫</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python爬取知乎回答并进行舆情分析：舆情分析部分</title>
+    <url>/2021/08/27/python_zhihu2/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在上一节中，利用爬虫爬取了<a href="https://www.zhihu.com/question/482094335/answer/2080599564"><strong>问题</strong></a>下的所有回答，原文链接如下：<br><a href="http://dutljy.top/2021/08/24/python_zhihu/">python爬取知乎回答并进行舆情分析：爬取数据部分</a><br>本节中利用jieba工具对回答分词，统计词频生成词云，并利用折线图统计每日回答数，做一个简单的舆情分析。</p>
+<h1 id="生成词云"><a href="#生成词云" class="headerlink" title="生成词云"></a>生成词云</h1><h2 id="文本预处理（使用停用词、自定义分词）"><a href="#文本预处理（使用停用词、自定义分词）" class="headerlink" title="文本预处理（使用停用词、自定义分词）"></a>文本预处理（使用停用词、自定义分词）</h2><p>jieba分词支持<strong>停用词</strong>和<strong>自定义分词</strong>。停用词能够过滤掉与语义无关的单词，自定义分词能够防止指定词汇被切分，例如某些不被一般词典收纳的新潮词汇。</p>
+<p>引包：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> matplotlib</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br></pre></td></tr></table></figure>
+<p>加载词典：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 加载自定义词典  </span></span><br><span class="line">newdict_path = <span class="string">&quot;./source/newdict.txt&quot;</span></span><br><span class="line">jieba.load_userdict(newdict_path)       </span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载停用词词典</span></span><br><span class="line">stop_list = []</span><br><span class="line">stopdict_path = <span class="string">&#x27;./source/stopdict.txt&#x27;</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(stopdict_path, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">        stop_list.append(line[:-<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<p>数据预处理：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data = pd.read_csv(<span class="string">&#x27;./test.csv&#x27;</span>)</span><br><span class="line">data[<span class="string">&#x27;回答&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : x.replace(<span class="string">&#x27;\n&#x27;</span>, <span class="string">&#x27;&#x27;</span>)) </span><br><span class="line">data[<span class="string">&#x27;回答&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : x.replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;&#x27;</span>)) </span><br><span class="line">data[<span class="string">&#x27;分词&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : [i <span class="keyword">for</span> i <span class="keyword">in</span> jieba.cut(x) <span class="keyword">if</span> i <span class="keyword">not</span> <span class="keyword">in</span> stop_list])</span><br><span class="line">data[<span class="string">&#x27;创建时间&#x27;</span>] = data[<span class="string">&#x27;创建时间&#x27;</span>].apply(<span class="keyword">lambda</span> x : x[:<span class="number">10</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="统计词频"><a href="#统计词频" class="headerlink" title="统计词频"></a>统计词频</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">all_words = data[<span class="string">&#x27;分词&#x27;</span>].to_list()</span><br><span class="line"></span><br><span class="line">word_dict = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> words <span class="keyword">in</span> all_words:</span><br><span class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> words:</span><br><span class="line">        <span class="keyword">if</span> word <span class="keyword">in</span> word_dict:</span><br><span class="line">            word_dict[word] += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            word_dict[word] = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h2 id="生成词云-1"><a href="#生成词云-1" class="headerlink" title="生成词云"></a>生成词云</h2><p>利用<strong>wordcloud</strong>绘制词云：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> wordcloud <span class="keyword">import</span> WordCloud</span><br><span class="line"><span class="comment"># 生成词云</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_word_cloud</span>(<span class="params">word_dict</span>):</span></span><br><span class="line">    <span class="comment"># 支持中文, SimHei.ttf可从以下地址下载：https://github.com/cystanford/word_cloud</span></span><br><span class="line">    wc = WordCloud(</span><br><span class="line">        font_path=<span class="string">&quot;./source/SimHei.ttf&quot;</span>,</span><br><span class="line">        background_color=<span class="string">&#x27;white&#x27;</span>,</span><br><span class="line">        max_words=<span class="number">25</span>,</span><br><span class="line">        width=<span class="number">1800</span>,</span><br><span class="line">        height=<span class="number">1200</span>,</span><br><span class="line">    )</span><br><span class="line">    word_cloud = wc.generate_from_frequencies(word_dict)</span><br><span class="line">    <span class="comment"># 写词云图片</span></span><br><span class="line">    word_cloud.to_file(<span class="string">&quot;wordcloud2.jpg&quot;</span>)</span><br><span class="line">    <span class="comment"># 显示词云文件</span></span><br><span class="line">    plt.imshow(word_cloud)</span><br><span class="line">    plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据词频生成词云</span></span><br><span class="line">create_word_cloud(word_dict)</span><br></pre></td></tr></table></figure>
+<p>结果如下：<br><img src="https://img-blog.csdnimg.cn/5e9215aee694425fa89325e3a8a4484d.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="折线图"><a href="#折线图" class="headerlink" title="折线图"></a>折线图</h1><h2 id="统计每日回答数"><a href="#统计每日回答数" class="headerlink" title="统计每日回答数"></a>统计每日回答数</h2><p>利用字典统计每日回答的数量。：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修正回答时间格式：年-月-日 </span></span><br><span class="line">data[<span class="string">&#x27;创建时间&#x27;</span>] = data[<span class="string">&#x27;创建时间&#x27;</span>].apply(<span class="keyword">lambda</span> x : x[:<span class="number">10</span>])</span><br><span class="line"></span><br><span class="line">date_dict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">all_dates = data[<span class="string">&#x27;创建时间&#x27;</span>].to_list()</span><br><span class="line"><span class="keyword">for</span> date <span class="keyword">in</span> all_dates:</span><br><span class="line">    <span class="keyword">if</span> date <span class="keyword">not</span> <span class="keyword">in</span> date_dict:</span><br><span class="line">        date_dict[date] = <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        date_dict[date] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">x = []</span><br><span class="line">y = []</span><br><span class="line"><span class="keyword">for</span> key,value <span class="keyword">in</span> date_dict.items():</span><br><span class="line">    x.append(key)</span><br><span class="line">    y.append(value)</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成折线图"><a href="#生成折线图" class="headerlink" title="生成折线图"></a>生成折线图</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="comment">#通用设置，背景颜色、图片大小、是否</span></span><br><span class="line">matplotlib.rc(<span class="string">&#x27;axes&#x27;</span>, facecolor = <span class="string">&#x27;white&#x27;</span>)</span><br><span class="line">matplotlib.rc(<span class="string">&#x27;figure&#x27;</span>, figsize = (<span class="number">6</span>, <span class="number">4</span>))</span><br><span class="line">matplotlib.rc(<span class="string">&#x27;axes&#x27;</span>, grid = <span class="literal">True</span>)</span><br><span class="line"><span class="comment">#数据及线属性</span></span><br><span class="line">plt.plot(x, y,<span class="string">&#x27;.-&#x27;</span>)</span><br><span class="line"><span class="comment">#标题设置</span></span><br><span class="line">plt.title(<span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;date&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;amount&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>结果如下：<br><img src="https://img-blog.csdnimg.cn/9b3c93065a6640d7a8453a52d0b08a03.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h1><p>除了<strong>回答</strong>和<strong>创建时间</strong>两个字段以外，爬取结果的其他字段也可以进行数据分析；也可以尝试利用user_token做一个用户画像分析。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>数据分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>torch.nn.Embedding() 原理及应用</title>
+    <url>/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="torch-nn-Embedding-原理及应用"><a href="#torch-nn-Embedding-原理及应用" class="headerlink" title="torch.nn.Embedding() 原理及应用"></a>torch.nn.Embedding() 原理及应用</h1><p>在自然语言处理中，embedding是一种十分常见的操作。它可以将单词向量化，生成计算机可以计算处理的形式。</p>
+<blockquote>
+<p>参考链接：</p>
+<p><a href="https://www.jianshu.com/p/63e7acc5e890">通俗讲解pytorch中nn.Embedding原理及使用</a></p>
+<p><a href="https://pytorch.org/docs/master/generated/torch.nn.Embedding.html">pytorch embedding 官方文档</a></p>
+</blockquote>
+<h1 id="pytorch函数调用"><a href="#pytorch函数调用" class="headerlink" title="pytorch函数调用"></a>pytorch函数调用</h1><h2 id="调用方式"><a href="#调用方式" class="headerlink" title="调用方式"></a>调用方式</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=<span class="literal">None</span>, max_norm=<span class="literal">None</span>, norm_type=<span class="number">2.0</span>, scale_grad_by_freq=<span class="literal">False</span>, sparse=<span class="literal">False</span>, _weight=<span class="literal">None</span>, device=<span class="literal">None</span>, dtype=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>生成一个简单的查找表，用于存储固定大小的词典的嵌入向量。</p>
+<p>通常用于存储单词嵌入并使用索引检索它们。模块的输入是一个索引列表，输出是相应的单词嵌入向量，嵌入向量反映了单词蕴含的语义特征。</p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><ul>
+<li>num_embeddings (<em>int</em>) – 词典的大小尺寸，比如总共出现5000个词，那就输入5000。此时index为（0-4999）</li>
+<li>embedding_dim (<em>int</em>) – 嵌入向量的维度，即用多少维来表示一个符号。</li>
+<li>padding_idx (<em>int, optional</em>) – 填充id，比如，输入长度为100，但是每次的句子长度并不一样，后面就需要用统一的数字填充，而这里就是指定这个数字，这样，网络在遇到填充id时，就不会计算其与其它符号的相关性。<strong>（初始化为0）</strong></li>
+<li>max_norm (<em>float, optional</em>) – 最大范数，如果嵌入向量的范数超过了这个界限，就要进行再归一化。</li>
+<li>norm_type (<em>float, optional</em>) – 指定利用什么范数计算，并用于对比max_norm，默认为2范数。</li>
+<li>scale_grad_by_freq (<em>boolean, optional</em>) – 根据单词在mini-batch中出现的频率，对梯度进行放缩。默认为False.</li>
+<li>sparse (<em>bool, optional</em>) – 若为True,则与权重矩阵相关的梯度转变为稀疏张量。</li>
+</ul>
+<h3 id="成员函数"><a href="#成员函数" class="headerlink" title="成员函数"></a>成员函数</h3><ul>
+<li>Embedding.weight(<em>Tensor</em>) – (0,1) 浮点数初始化可学习权值矩阵，形状为(num_embeddings, embeding_dim)。</li>
+</ul>
+<h3 id="输入输出形状"><a href="#输入输出形状" class="headerlink" title="输入输出形状"></a>输入输出形状</h3><ul>
+<li>Input: (∗), 任意形状的 IntTensor 或 LongTensor。</li>
+<li>Output: (∗,H), * 是 input 的形状，H = embedding_dim。</li>
+</ul>
+<h1 id="embedding应用"><a href="#embedding应用" class="headerlink" title="embedding应用"></a>embedding应用</h1><h2 id="逐步解析"><a href="#逐步解析" class="headerlink" title="逐步解析"></a>逐步解析</h2><p>torch.nn 包下的Embedding，作为训练的一层，随模型训练得到适合的词向量，再将相应的词向量放进网络，这里我们以 <strong>Bi_LSTM</strong> 为例。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#建立词向量层</span></span><br><span class="line">embed = torch.nn.Embedding(n_vocabulary,embedding_dim)</span><br></pre></td></tr></table></figure>
+
+<p>实际上，上面通过随机初始化建立了 embedding 层后，建立了一个“二维表”，存储了词典中每个词的词向量。每个 batch 的训练，都要从词向量表找到 batch 对应的单词的词向量作为模型的输入。那么<strong>如何把一个 batch 中每个句子的所有单词的词向量放进网络中呢，输入和输出都是什么样子呢？</strong></p>
+<p>首先我们需要建立一个词典，并生成生成单词到词典序号的映射。假设一个 batch 如下所示：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">[<span class="string">&#x27;I am a boy.&#x27;</span>,<span class="string">&#x27;How am I?&#x27;</span>,<span class="string">&#x27;I am very lucky.&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>显然，这个 batch 有3个句子，即batch_size=3</p>
+<p>我们将句子标准化：将单词大写转小写，标点分离，将三个 list 按单词数从多到少排列。经处理后，mini-batch变为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;boy&#x27;</span>,<span class="string">&#x27;.&#x27;</span>],[<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;very&#x27;</span>,<span class="string">&#x27;lucky&#x27;</span>,<span class="string">&#x27;.&#x27;</span>]，[<span class="string">&#x27;how&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;?&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>同时我们得到词典，生成词典-index 的映射：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">dict</span> = &#123;<span class="string">&#x27;i&#x27;</span>:<span class="number">0</span>, <span class="string">&#x27;am&#x27;</span>:<span class="number">1</span>, <span class="string">&#x27;a&#x27;</span>:<span class="number">2</span>, <span class="string">&#x27;boy&#x27;</span>:<span class="number">3</span>, <span class="string">&#x27;.&#x27;</span>:<span class="number">4</span>, <span class="string">&#x27;very&#x27;</span>:<span class="number">5</span>, <span class="string">&#x27;lucky&#x27;</span>:<span class="number">6</span>, <span class="string">&#x27;how&#x27;</span>:<span class="number">7</span>, <span class="string">&#x27;?&#x27;</span>:<span class="number">8</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后将 batch 中的单词转为词典中的 index 序号，即 word2vec，batch 为：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],[<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">4</span>]，[<span class="number">7</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">8</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>对长度不足的句子，进行填充。填充 PAD 假设序号是9，填充之后为：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],[<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">4</span>],[<span class="number">7</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">8</span>,<span class="number">9</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以直接取词向量训练了吗?</p>
+<p><strong>不能！</strong>上面 batch 有3个样例，RNN 的每一步要输入 batch_size 中所有样例的相同索引号的单词，所以喂入 Bi_LSTM 的 batch 的维度应调整为：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">[seq_len, batch_size]</span><br></pre></td></tr></table></figure>
+
+<p><strong>怎么转换呢？</strong>利用 torchtext 的 Iterator 函数生成数据集迭代器即可转换，详见 torchtext 的使用方法。变换后，batch 变为：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">0</span>,<span class="number">7</span>],[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>],[<span class="number">2</span>,<span class="number">5</span>,<span class="number">0</span>],[<span class="number">3</span>,<span class="number">6</span>,<span class="number">8</span>],[<span class="number">4</span>,<span class="number">4</span>,<span class="number">9</span>]]</span><br></pre></td></tr></table></figure>
+
+<p>根据 nn.Embedding 的输入类型，batch 还要转成 LongTensor，作为向量层的输入：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">batch = torch.LongTensor(batch)</span><br></pre></td></tr></table></figure>
+
+<p>利用 embedding 生产 batch 的词向量：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">embed_batch = embed(batch)</span><br></pre></td></tr></table></figure>
+
+<p>假设 embedding_dim = 6，结果是（数是我抄的）：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">tensor([[[-<span class="number">0.2699</span>,  <span class="number">0.7401</span>, -<span class="number">0.8000</span>,  <span class="number">0.0472</span>,  <span class="number">0.9032</span>, -<span class="number">0.0902</span>],</span><br><span class="line">         [-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [ <span class="number">0.1146</span>, -<span class="number">0.8077</span>, -<span class="number">1.4957</span>, -<span class="number">1.5407</span>,  <span class="number">0.3755</span>, -<span class="number">0.6805</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [ <span class="number">0.1146</span>, -<span class="number">0.8077</span>, -<span class="number">1.4957</span>, -<span class="number">1.5407</span>,  <span class="number">0.3755</span>, -<span class="number">0.6805</span>],</span><br><span class="line">         [-<span class="number">0.0387</span>,  <span class="number">0.8401</span>,  <span class="number">1.6871</span>,  <span class="number">0.3057</span>, -<span class="number">0.8248</span>, -<span class="number">0.1326</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.0387</span>,  <span class="number">0.8401</span>,  <span class="number">1.6871</span>,  <span class="number">0.3057</span>, -<span class="number">0.8248</span>, -<span class="number">0.1326</span>],</span><br><span class="line">         [-<span class="number">0.3745</span>, -<span class="number">1.9178</span>, -<span class="number">0.2928</span>,  <span class="number">0.6510</span>,  <span class="number">0.9621</span>, -<span class="number">1.3871</span>],</span><br><span class="line">         [-<span class="number">0.6739</span>,  <span class="number">0.3931</span>,  <span class="number">0.1464</span>,  <span class="number">1.4965</span>, -<span class="number">0.9210</span>, -<span class="number">0.0995</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [-<span class="number">0.7411</span>,  <span class="number">0.7948</span>, -<span class="number">1.5864</span>,  <span class="number">0.1176</span>,  <span class="number">0.0789</span>, -<span class="number">0.3376</span>],</span><br><span class="line">         [-<span class="number">0.3745</span>, -<span class="number">1.9178</span>, -<span class="number">0.2928</span>,  <span class="number">0.6510</span>,  <span class="number">0.9621</span>, -<span class="number">1.3871</span>]],</span><br><span class="line"></span><br><span class="line">        [[ <span class="number">0.2837</span>,  <span class="number">0.5629</span>,  <span class="number">1.0398</span>,  <span class="number">2.0679</span>, -<span class="number">1.0122</span>, -<span class="number">0.2714</span>],</span><br><span class="line">         [ <span class="number">0.2837</span>,  <span class="number">0.5629</span>,  <span class="number">1.0398</span>,  <span class="number">2.0679</span>, -<span class="number">1.0122</span>, -<span class="number">0.2714</span>],</span><br><span class="line">         [ <span class="number">0.2242</span>, -<span class="number">1.2474</span>,  <span class="number">0.3882</span>,  <span class="number">0.2814</span>, -<span class="number">0.4796</span>,  <span class="number">0.3732</span>]]],</span><br><span class="line">       grad_fn=&lt;EmbeddingBackward&gt;)</span><br></pre></td></tr></table></figure>
+
+<p>可以得出输出的维度为 [seq_len, batch_size, embedding_size]。</p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BiLSTM</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, embedding_dim, hidden_dim, n_layers</span>):</span>        </span><br><span class="line">        <span class="built_in">super</span>(BiLSTM_Attention, self).__init__()</span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.n_layers = n_layers</span><br><span class="line">        self.embedding = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        self.rnn = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=n_layers, bidirectional=<span class="literal">True</span>, dropout=<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        <span class="comment"># embedding: [seq_len, batch, embedding_dim]</span></span><br><span class="line">        embedding = self.dropout(self.embedding(x))</span><br><span class="line">        <span class="comment"># output: [seq_len, batch, hidden_dim*2] -&gt; [batch,seq_len, hidden_dim*2]</span></span><br><span class="line">        output, (hidden_state, cell_state) = self.rnn(embedding)</span><br><span class="line">        output = output.permute(<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+
+
+
+<p>度量学习</p>
+<p><img src="D:\markdown\images\image-20211118185929006.png" alt="image-20211118185929006"></p>
+<p><img src="D:\markdown\images\image-20211118190039010.png" alt="image-20211118190039010"></p>
+<p><img src="D:\markdown\images\image-20211118190148552.png" alt="image-20211118190148552"></p>
+<p><img src="D:\markdown\images\image-20211118190333360.png" alt="image-20211118190333360"></p>
+<p><img src="D:\markdown\images\image-20211118190411230.png" alt="image-20211118190411230"></p>
+<p>3500条，细粒度（九类），三个侮辱性等级</p>
+<ol>
+<li>文本相似度——欧氏距离 –&gt; </li>
+<li>有监督对比学习引入位置</li>
+</ol>
+]]></content>
+      <tags>
+        <tag>pytorch</tag>
+        <tag>深度学习</tag>
       </tags>
   </entry>
   <entry>
@@ -193,65 +457,6 @@
       </tags>
   </entry>
   <entry>
-    <title>从 one-hot 到 BERT —— 静态（fastText、GloVe）与动态（BERT）</title>
-    <url>/2022/06/30/%E4%BB%8E%20one-hot%20%E5%88%B0%20BERT%20%E2%80%94%E2%80%94%20%E9%9D%99%E6%80%81%EF%BC%88fastText%E3%80%81GloVe%EF%BC%89%E4%B8%8E%E5%8A%A8%E6%80%81%EF%BC%88BERT%EF%BC%89/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="静态（fastText、GloVe）与动态（BERT）"><a href="#静态（fastText、GloVe）与动态（BERT）" class="headerlink" title="静态（fastText、GloVe）与动态（BERT）"></a>静态（fastText、GloVe）与动态（BERT）</h1><h2 id="fastText"><a href="#fastText" class="headerlink" title="fastText"></a>fastText</h2><h3 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h3><p>word2vec 没有直接利⽤构词学中的信息，将形态不同的单词⽤不同的向量来表⽰。例如，“dog”和“dogs”分别⽤两个不同的向量表⽰，而模型中并未直接表达这两个向量之间的关系，这种单词内部形态信息因为被转换成不同的id丢失了。</p>
-<p>鉴于此，fastText 提出了 <strong>子词嵌⼊(subword embedding)</strong> 的⽅法，将构词信息引⼊ word2vec 中。利用字符级别的 n-grams 来表示一个单词。</p>
-<p>例如：”books” =  “book”,  “s”，进一步叠加这个二元组来表示新词。</p>
-<p><strong>优势</strong>：更好的解决OOV问题，即能够获得新词（不在训练数据中）的文本表示（n-gram向量）。</p>
-<h3 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h3><p><strong>训练过程</strong>：将整篇文档的词向量及n-gram向量叠加平均得到文档向量，然后使用文档向量做softmax多分类。</p>
-<img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206291053573.gif" alt="点击查看图片来源" style="zoom: 67%;" />
-
-<h3 id="与Word2Vec的比较"><a href="#与Word2Vec的比较" class="headerlink" title="与Word2Vec的比较"></a>与Word2Vec的比较</h3><p>相同点：</p>
-<ul>
-<li>模型结构相近，都是采用embedding向量的形式，得到word的隐向量表达。</li>
-<li>采用很多相似的优化方法，比如使用Hierarchical softmax优化训练和预测中的打分速度。</li>
-</ul>
-<p>模型层面：</p>
-<ul>
-<li><strong>输入</strong>：都是经过向量表示的单词<ul>
-<li>CBOW 的输入是目标单词的上下文，经过 one-hot 编码；</li>
-<li>fastText 的输入是多个单词及其 n-gram 特征，这些特征用来表示单个文档；</li>
-</ul>
-</li>
-<li><strong>隐藏层</strong>：都是对多个词向量的叠加平均。</li>
-<li><strong>输出</strong>：都是一个特定的 target<ul>
-<li>CBOW 的输出是目标词汇；</li>
-<li>fastText 的输出是文档对应的类标。</li>
-</ul>
-</li>
-</ul>
-<h2 id="GloVe（Global-Vectors-for-Word-Representation）"><a href="#GloVe（Global-Vectors-for-Word-Representation）" class="headerlink" title="GloVe（Global Vectors for Word Representation）"></a>GloVe（Global Vectors for Word Representation）</h2><h3 id="引入-1"><a href="#引入-1" class="headerlink" title="引入"></a>引入</h3><ul>
-<li>Word2Vec 没有充分利用全局统计信息；</li>
-<li>共现矩阵 + SVD 计算代价大。</li>
-</ul>
-<h3 id="核心思想-1"><a href="#核心思想-1" class="headerlink" title="核心思想"></a>核心思想</h3><p>基于大规模无标签数据，利用全局词频统计（共现信息）。将单词表示为由实数组成的向量，捕捉单词之间的语义信息。</p>
-<h2 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h2><h3 id="引入-2"><a href="#引入-2" class="headerlink" title="引入"></a>引入</h3><p>解决一词多义问题。</p>
-<h3 id="训练模式"><a href="#训练模式" class="headerlink" title="训练模式"></a>训练模式</h3><ul>
-<li>语言模型预训练</li>
-<li>fine-tuning 解决下游任务</li>
-</ul>
-<h3 id="预训练任务"><a href="#预训练任务" class="headerlink" title="预训练任务"></a>预训练任务</h3><p>BERT采用的预训练任务有两种，MLM（Masked LM） 和 SP（Sentence Prediction）</p>
-<ul>
-<li>MLM 完形填空：对句子中随机的15%的单词进行操作，其中 80% mask 被 mask，10%被其他词汇替换，10%保持不变。</li>
-<li>Next Sentence Prediction：跟定句子1和句子2，判定句子2是否是句子1的下文。</li>
-</ul>
-<h3 id="模型架构"><a href="#模型架构" class="headerlink" title="模型架构"></a>模型架构</h3><h3 id="token"><a href="#token" class="headerlink" title="token"></a>token</h3><p>BPE 编码 —— wordpiece，训练过程：首先将词分成一个一个的字符，然后在词的范围内统计字符对出现的次数，每次将次数最多的<strong>字符对</strong>保存起来，直到循环次数结束（中止条件：字符对数量小于阈值）。</p>
-<blockquote>
-<p>参考：</p>
-<ul>
-<li><a href="https://arxiv.org/abs/1508.07909">https://arxiv.org/abs/1508.07909</a></li>
-<li><a href="https://www.cnblogs.com/huangyc/p/10223075.html">https://www.cnblogs.com/huangyc/p/10223075.html</a></li>
-</ul>
-</blockquote>
-<h4 id="embedding"><a href="#embedding" class="headerlink" title="embedding"></a>embedding</h4><p>Token Embedding + Segment Embedding（A句 or B句）+ Position Embedding</p>
-<h4 id="encoder"><a href="#encoder" class="headerlink" title="encoder"></a>encoder</h4><p>12 * transformer encoder</p>
-]]></content>
-      <tags>
-        <tag>NLP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>从 one-hot 到 BERT —— 基本词嵌入方法总结</title>
     <url>/2022/06/30/%E4%BB%8E%20one-hot%20%E5%88%B0%20BERT%20%E2%80%94%E2%80%94%20%E8%AF%8D%E5%B5%8C%E5%85%A5%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="从-one-hot-到-BERT-——-词嵌入总结"><a href="#从-one-hot-到-BERT-——-词嵌入总结" class="headerlink" title="从 one-hot 到 BERT —— 词嵌入总结"></a>从 one-hot 到 BERT —— 词嵌入总结</h1><h2 id="词嵌入"><a href="#词嵌入" class="headerlink" title="词嵌入"></a>词嵌入</h2><p>词嵌入（word embedding）：把词映射为实数域向量的技术，从文本表示方法区分，主要分为<strong>离散表示</strong>和<strong>分布式表示</strong>。</p>
@@ -350,147 +555,62 @@
       </tags>
   </entry>
   <entry>
-    <title>排序（三）：谁主沉浮——堆与堆排序</title>
-    <url>/2022/01/03/%E5%A0%86%E6%8E%92%E5%BA%8F/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>leetcode：<a href="https://leetcode-cn.com/problems/sort-an-array/">https://leetcode-cn.com/problems/sort-an-array/</a></p>
-<h1 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h1><h2 id="定义-amp-amp-性质"><a href="#定义-amp-amp-性质" class="headerlink" title="定义&amp;&amp;性质"></a>定义&amp;&amp;性质</h2><p>堆（<strong>heap</strong>）是计算机科学中一类特殊的数据结构的统称，通常是一个可以被看作是一棵树的数组对象。</p>
-<p><strong>定义</strong>：n 个元素的序列 {k1,k2,ki,…,kn} 当且仅当满足下关系时，称之为堆。$k_i \le k_{2i}$ 且 $ k_i \le k_{2i+1}$ 或者 $k_i \ge k_{2i}$ 且 $ k_i \ge k_{2i+1}$。若以一维数组存储此序列，并将数组视为完全二叉树，可知非叶子节点的值均不大于（或不小于）其左右子节点的值，堆顶元素（即二叉树的根）必为序列中 n 个元素的最小值。</p>
-<p><strong>性质</strong>：</p>
-<ul>
-<li>堆中某个节点的值总是不大于或不小于其父节点的值；</li>
-<li>堆总是一棵完全二叉树。</li>
-</ul>
-<img src="/images/article/排序/heap.png" alt="img" style="zoom:80%;"/>
+    <title>从 one-hot 到 BERT —— 静态（fastText、GloVe）与动态（BERT）</title>
+    <url>/2022/06/30/%E4%BB%8E%20one-hot%20%E5%88%B0%20BERT%20%E2%80%94%E2%80%94%20%E9%9D%99%E6%80%81%EF%BC%88fastText%E3%80%81GloVe%EF%BC%89%E4%B8%8E%E5%8A%A8%E6%80%81%EF%BC%88BERT%EF%BC%89/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="静态（fastText、GloVe）与动态（BERT）"><a href="#静态（fastText、GloVe）与动态（BERT）" class="headerlink" title="静态（fastText、GloVe）与动态（BERT）"></a>静态（fastText、GloVe）与动态（BERT）</h1><h2 id="fastText"><a href="#fastText" class="headerlink" title="fastText"></a>fastText</h2><h3 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h3><p>word2vec 没有直接利⽤构词学中的信息，将形态不同的单词⽤不同的向量来表⽰。例如，“dog”和“dogs”分别⽤两个不同的向量表⽰，而模型中并未直接表达这两个向量之间的关系，这种单词内部形态信息因为被转换成不同的id丢失了。</p>
+<p>鉴于此，fastText 提出了 <strong>子词嵌⼊(subword embedding)</strong> 的⽅法，将构词信息引⼊ word2vec 中。利用字符级别的 n-grams 来表示一个单词。</p>
+<p>例如：”books” =  “book”,  “s”，进一步叠加这个二元组来表示新词。</p>
+<p><strong>优势</strong>：更好的解决OOV问题，即能够获得新词（不在训练数据中）的文本表示（n-gram向量）。</p>
+<h3 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h3><p><strong>训练过程</strong>：将整篇文档的词向量及n-gram向量叠加平均得到文档向量，然后使用文档向量做softmax多分类。</p>
+<img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206291053573.gif" alt="点击查看图片来源" style="zoom: 67%;" />
 
-<h2 id="堆的建立方法"><a href="#堆的建立方法" class="headerlink" title="堆的建立方法"></a>堆的建立方法</h2><h3 id="筛选法：下调"><a href="#筛选法：下调" class="headerlink" title="筛选法：下调"></a>筛选法：下调</h3><p>设堆共有 n 个节点，深度为 $log_2(n)$，设为 k。按照<strong>从下到上，从右到左</strong>的方法找到第一个非叶子节点 i（索引为 n/2）开始调整，使以该节点为根节点的子树为大顶堆。</p>
-<p><strong>调整策略</strong>：</p>
+<h3 id="与Word2Vec的比较"><a href="#与Word2Vec的比较" class="headerlink" title="与Word2Vec的比较"></a>与Word2Vec的比较</h3><p>相同点：</p>
 <ul>
-<li>取左右子节点中较大的一个与节点 i 比较；</li>
-<li>若大于节点 i，父子交换值。若子节点仍有子节点（即节点 i 有孙子节点），则继续向下调整，确保以子节点为根节点的子树为大顶堆；</li>
-<li>若小于节点 i，说明当前子树为大顶堆，结束。</li>
+<li>模型结构相近，都是采用embedding向量的形式，得到word的隐向量表达。</li>
+<li>采用很多相似的优化方法，比如使用Hierarchical softmax优化训练和预测中的打分速度。</li>
 </ul>
-<p>根据树的相关性质，又有：</p>
+<p>模型层面：</p>
 <ul>
-<li>第 i 层最多有节点 $2^{i -1} $ 个；</li>
-<li>非叶子节点的深度为 [0, k - 1] 即 [0, $log_2 n-1$]</li>
-<li>利用筛选法建堆，每层每个节点最多比较两次——<strong>父节点与两个子节点比较</strong>；</li>
-<li>第 k - 1 层的节点最多下调一层，第 k - i 层的节点最多下调 i 层…以此类推。</li>
+<li><strong>输入</strong>：都是经过向量表示的单词<ul>
+<li>CBOW 的输入是目标单词的上下文，经过 one-hot 编码；</li>
+<li>fastText 的输入是多个单词及其 n-gram 特征，这些特征用来表示单个文档；</li>
 </ul>
-<p>所以，$S(k) = \sum_{i = 1}^{k-1}2^{i-1}*(k-i)*2$，时间复杂度 $A(n) = O(n)$。</p>
-<img src="/images/article/排序/筛选法建堆时间复杂度.png" alt="img" style="zoom:80%;"/>
-
-<h3 id="插入法：上浮"><a href="#插入法：上浮" class="headerlink" title="插入法：上浮"></a>插入法：上浮</h3><p><strong>调整策略</strong>：</p>
+</li>
+<li><strong>隐藏层</strong>：都是对多个词向量的叠加平均。</li>
+<li><strong>输出</strong>：都是一个特定的 target<ul>
+<li>CBOW 的输出是目标词汇；</li>
+<li>fastText 的输出是文档对应的类标。</li>
+</ul>
+</li>
+</ul>
+<h2 id="GloVe（Global-Vectors-for-Word-Representation）"><a href="#GloVe（Global-Vectors-for-Word-Representation）" class="headerlink" title="GloVe（Global Vectors for Word Representation）"></a>GloVe（Global Vectors for Word Representation）</h2><h3 id="引入-1"><a href="#引入-1" class="headerlink" title="引入"></a>引入</h3><ul>
+<li>Word2Vec 没有充分利用全局统计信息；</li>
+<li>共现矩阵 + SVD 计算代价大。</li>
+</ul>
+<h3 id="核心思想-1"><a href="#核心思想-1" class="headerlink" title="核心思想"></a>核心思想</h3><p>基于大规模无标签数据，利用全局词频统计（共现信息）。将单词表示为由实数组成的向量，捕捉单词之间的语义信息。</p>
+<h2 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h2><h3 id="引入-2"><a href="#引入-2" class="headerlink" title="引入"></a>引入</h3><p>解决一词多义问题。</p>
+<h3 id="训练模式"><a href="#训练模式" class="headerlink" title="训练模式"></a>训练模式</h3><ul>
+<li>语言模型预训练</li>
+<li>fine-tuning 解决下游任务</li>
+</ul>
+<h3 id="预训练任务"><a href="#预训练任务" class="headerlink" title="预训练任务"></a>预训练任务</h3><p>BERT采用的预训练任务有两种，MLM（Masked LM） 和 SP（Sentence Prediction）</p>
 <ul>
-<li>插入新元素时，只与它的父节点比较，无需和兄弟节点比较，上调一层，比较一次。二叉树第 i 层最多有 $2^{i-1}$ 个节点，每个节点最多上调 i - 1。</li>
+<li>MLM 完形填空：对句子中随机的15%的单词进行操作，其中 80% mask 被 mask，10%被其他词汇替换，10%保持不变。</li>
+<li>Next Sentence Prediction：跟定句子1和句子2，判定句子2是否是句子1的下文。</li>
 </ul>
-<p>所以，$S(k) = \sum_{i = 2}^{k}2^{i-1}*(i-1)$，时间复杂度 $A(n) = O(nlogn)$。</p>
-<img src="/images/article/排序/插入法建堆时间复杂度.png" alt="img"/>
-
-<h1 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h1><h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><p>堆排序的基本思想是:</p>
-<ul>
-<li>将待排序的序列构造成一个大顶堆。此时，整个序列的最大值就是堆顶的根节点。</li>
-<li>将其与末尾元素进行交换，此时末尾元素为最大值。</li>
-<li>然后将剩余 n-1 个元素重新构造成大顶堆，得到 n 个元素的次大值。如此反复执行，最终得到一个有序序列。</li>
-</ul>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p><strong>筛选法</strong>建堆后堆排序：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> len = nums.length;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = len/<span class="number">2</span> - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)&#123;</span><br><span class="line">            AdjustHeap(nums, i, len);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = len - <span class="number">1</span>; j &gt; <span class="number">0</span>; j--)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp = nums[j];</span><br><span class="line">            nums[j] = nums[<span class="number">0</span>];</span><br><span class="line">            nums[<span class="number">0</span>] = temp;</span><br><span class="line">            AdjustHeap(nums, <span class="number">0</span>, j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AdjustHeap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i, <span class="keyword">int</span> size)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> temp = nums[i];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> child = <span class="number">2</span>*i+<span class="number">1</span>; child &lt; size; child = <span class="number">2</span>*child+<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="comment">// 选择较大的子节点进行比较</span></span><br><span class="line">            <span class="keyword">if</span>(child+<span class="number">1</span> &lt; size &amp;&amp; nums[child+<span class="number">1</span>] &gt; nums[child])</span><br><span class="line">                child++;</span><br><span class="line">            <span class="comment">// 父节点小于子节点，向下继续调整</span></span><br><span class="line">            <span class="keyword">if</span>(temp &lt; nums[child])&#123;</span><br><span class="line">                nums[i] = nums[child];</span><br><span class="line">                i = child;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 父节点大于子节点，符合大顶堆，跳出循环</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        nums[i] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>插入法</strong>建堆后堆排序：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> copy[] = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">50000</span>];  </span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> len = nums.length;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++)</span><br><span class="line">            BuildHeap(nums, i);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = len - <span class="number">1</span>; j &gt; <span class="number">0</span>; j--)&#123;</span><br><span class="line">            swap(copy, j, <span class="number">0</span>);</span><br><span class="line">            AdjustHeap(copy, <span class="number">0</span>, j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++)</span><br><span class="line">            nums[i] = copy[i];</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BuildHeap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">        copy[i] = nums[i];</span><br><span class="line">        <span class="comment">// 子节点与父节点比较，如果大于父节点就上调</span></span><br><span class="line">        <span class="comment">// 父节点索引(i-1)/2</span></span><br><span class="line">        <span class="keyword">while</span>(i &gt; <span class="number">0</span> &amp;&amp; copy[(i-<span class="number">1</span>)/<span class="number">2</span>] &lt; copy[i])&#123;</span><br><span class="line">            swap(copy, (i-<span class="number">1</span>)/<span class="number">2</span>, i);</span><br><span class="line">            i = (i-<span class="number">1</span>)/<span class="number">2</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AdjustHeap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i, <span class="keyword">int</span> size)</span></span>&#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        代码见筛选法建堆</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h2><p>堆排序的最优、最差和平均时间复杂度都为 $O(nlogn)$ ，是常用的排序算法中<strong>最稳定的排序方法</strong>，实验表明堆排序的稳定性优于归并排序。</p>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>算法</tag>
-        <tag>排序</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>torch.nn.Embedding() 原理及应用</title>
-    <url>/2021/11/18/torch.nn.Embedding%E5%8E%9F%E7%90%86%E5%8F%8A%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="torch-nn-Embedding-原理及应用"><a href="#torch-nn-Embedding-原理及应用" class="headerlink" title="torch.nn.Embedding() 原理及应用"></a>torch.nn.Embedding() 原理及应用</h1><p>在自然语言处理中，embedding是一种十分常见的操作。它可以将单词向量化，生成计算机可以计算处理的形式。</p>
+<h3 id="模型架构"><a href="#模型架构" class="headerlink" title="模型架构"></a>模型架构</h3><h3 id="token"><a href="#token" class="headerlink" title="token"></a>token</h3><p>BPE 编码 —— wordpiece，训练过程：首先将词分成一个一个的字符，然后在词的范围内统计字符对出现的次数，每次将次数最多的<strong>字符对</strong>保存起来，直到循环次数结束（中止条件：字符对数量小于阈值）。</p>
 <blockquote>
-<p>参考链接：</p>
-<p><a href="https://www.jianshu.com/p/63e7acc5e890">通俗讲解pytorch中nn.Embedding原理及使用</a></p>
-<p><a href="https://pytorch.org/docs/master/generated/torch.nn.Embedding.html">pytorch embedding 官方文档</a></p>
+<p>参考：</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1508.07909">https://arxiv.org/abs/1508.07909</a></li>
+<li><a href="https://www.cnblogs.com/huangyc/p/10223075.html">https://www.cnblogs.com/huangyc/p/10223075.html</a></li>
+</ul>
 </blockquote>
-<h1 id="pytorch函数调用"><a href="#pytorch函数调用" class="headerlink" title="pytorch函数调用"></a>pytorch函数调用</h1><h2 id="调用方式"><a href="#调用方式" class="headerlink" title="调用方式"></a>调用方式</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=<span class="literal">None</span>, max_norm=<span class="literal">None</span>, norm_type=<span class="number">2.0</span>, scale_grad_by_freq=<span class="literal">False</span>, sparse=<span class="literal">False</span>, _weight=<span class="literal">None</span>, device=<span class="literal">None</span>, dtype=<span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>生成一个简单的查找表，用于存储固定大小的词典的嵌入向量。</p>
-<p>通常用于存储单词嵌入并使用索引检索它们。模块的输入是一个索引列表，输出是相应的单词嵌入向量，嵌入向量反映了单词蕴含的语义特征。</p>
-<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><ul>
-<li>num_embeddings (<em>int</em>) – 词典的大小尺寸，比如总共出现5000个词，那就输入5000。此时index为（0-4999）</li>
-<li>embedding_dim (<em>int</em>) – 嵌入向量的维度，即用多少维来表示一个符号。</li>
-<li>padding_idx (<em>int, optional</em>) – 填充id，比如，输入长度为100，但是每次的句子长度并不一样，后面就需要用统一的数字填充，而这里就是指定这个数字，这样，网络在遇到填充id时，就不会计算其与其它符号的相关性。<strong>（初始化为0）</strong></li>
-<li>max_norm (<em>float, optional</em>) – 最大范数，如果嵌入向量的范数超过了这个界限，就要进行再归一化。</li>
-<li>norm_type (<em>float, optional</em>) – 指定利用什么范数计算，并用于对比max_norm，默认为2范数。</li>
-<li>scale_grad_by_freq (<em>boolean, optional</em>) – 根据单词在mini-batch中出现的频率，对梯度进行放缩。默认为False.</li>
-<li>sparse (<em>bool, optional</em>) – 若为True,则与权重矩阵相关的梯度转变为稀疏张量。</li>
-</ul>
-<h3 id="成员函数"><a href="#成员函数" class="headerlink" title="成员函数"></a>成员函数</h3><ul>
-<li>Embedding.weight(<em>Tensor</em>) – (0,1) 浮点数初始化可学习权值矩阵，形状为(num_embeddings, embeding_dim)。</li>
-</ul>
-<h3 id="输入输出形状"><a href="#输入输出形状" class="headerlink" title="输入输出形状"></a>输入输出形状</h3><ul>
-<li>Input: (∗), 任意形状的 IntTensor 或 LongTensor。</li>
-<li>Output: (∗,H), * 是 input 的形状，H = embedding_dim。</li>
-</ul>
-<h1 id="embedding应用"><a href="#embedding应用" class="headerlink" title="embedding应用"></a>embedding应用</h1><h2 id="逐步解析"><a href="#逐步解析" class="headerlink" title="逐步解析"></a>逐步解析</h2><p>torch.nn 包下的Embedding，作为训练的一层，随模型训练得到适合的词向量，再将相应的词向量放进网络，这里我们以 <strong>Bi_LSTM</strong> 为例。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#建立词向量层</span></span><br><span class="line">embed = torch.nn.Embedding(n_vocabulary,embedding_dim)</span><br></pre></td></tr></table></figure>
-
-<p>实际上，上面通过随机初始化建立了 embedding 层后，建立了一个“二维表”，存储了词典中每个词的词向量。每个 batch 的训练，都要从词向量表找到 batch 对应的单词的词向量作为模型的输入。那么<strong>如何把一个 batch 中每个句子的所有单词的词向量放进网络中呢，输入和输出都是什么样子呢？</strong></p>
-<p>首先我们需要建立一个词典，并生成生成单词到词典序号的映射。假设一个 batch 如下所示：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">[<span class="string">&#x27;I am a boy.&#x27;</span>,<span class="string">&#x27;How am I?&#x27;</span>,<span class="string">&#x27;I am very lucky.&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>显然，这个 batch 有3个句子，即batch_size=3</p>
-<p>我们将句子标准化：将单词大写转小写，标点分离，将三个 list 按单词数从多到少排列。经处理后，mini-batch变为：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;boy&#x27;</span>,<span class="string">&#x27;.&#x27;</span>],[<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;very&#x27;</span>,<span class="string">&#x27;lucky&#x27;</span>,<span class="string">&#x27;.&#x27;</span>]，[<span class="string">&#x27;how&#x27;</span>,<span class="string">&#x27;am&#x27;</span>,<span class="string">&#x27;i&#x27;</span>,<span class="string">&#x27;?&#x27;</span>]]</span><br></pre></td></tr></table></figure>
-
-<p>同时我们得到词典，生成词典-index 的映射：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">dict</span> = &#123;<span class="string">&#x27;i&#x27;</span>:<span class="number">0</span>, <span class="string">&#x27;am&#x27;</span>:<span class="number">1</span>, <span class="string">&#x27;a&#x27;</span>:<span class="number">2</span>, <span class="string">&#x27;boy&#x27;</span>:<span class="number">3</span>, <span class="string">&#x27;.&#x27;</span>:<span class="number">4</span>, <span class="string">&#x27;very&#x27;</span>:<span class="number">5</span>, <span class="string">&#x27;lucky&#x27;</span>:<span class="number">6</span>, <span class="string">&#x27;how&#x27;</span>:<span class="number">7</span>, <span class="string">&#x27;?&#x27;</span>:<span class="number">8</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<p>之后将 batch 中的单词转为词典中的 index 序号，即 word2vec，batch 为：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],[<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">4</span>]，[<span class="number">7</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">8</span>]]</span><br></pre></td></tr></table></figure>
-
-<p>对长度不足的句子，进行填充。填充 PAD 假设序号是9，填充之后为：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],[<span class="number">0</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">4</span>],[<span class="number">7</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">8</span>,<span class="number">9</span>]]</span><br></pre></td></tr></table></figure>
-
-<p>这样就可以直接取词向量训练了吗?</p>
-<p><strong>不能！</strong>上面 batch 有3个样例，RNN 的每一步要输入 batch_size 中所有样例的相同索引号的单词，所以喂入 Bi_LSTM 的 batch 的维度应调整为：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">[seq_len, batch_size]</span><br></pre></td></tr></table></figure>
-
-<p><strong>怎么转换呢？</strong>利用 torchtext 的 Iterator 函数生成数据集迭代器即可转换，详见 torchtext 的使用方法。变换后，batch 变为：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">batch = [[<span class="number">0</span>,<span class="number">0</span>,<span class="number">7</span>],[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>],[<span class="number">2</span>,<span class="number">5</span>,<span class="number">0</span>],[<span class="number">3</span>,<span class="number">6</span>,<span class="number">8</span>],[<span class="number">4</span>,<span class="number">4</span>,<span class="number">9</span>]]</span><br></pre></td></tr></table></figure>
-
-<p>根据 nn.Embedding 的输入类型，batch 还要转成 LongTensor，作为向量层的输入：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">batch = torch.LongTensor(batch)</span><br></pre></td></tr></table></figure>
-
-<p>利用 embedding 生产 batch 的词向量：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">embed_batch = embed(batch)</span><br></pre></td></tr></table></figure>
-
-<p>假设 embedding_dim = 6，结果是（数是我抄的）：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">tensor([[[-<span class="number">0.2699</span>,  <span class="number">0.7401</span>, -<span class="number">0.8000</span>,  <span class="number">0.0472</span>,  <span class="number">0.9032</span>, -<span class="number">0.0902</span>],</span><br><span class="line">         [-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [ <span class="number">0.1146</span>, -<span class="number">0.8077</span>, -<span class="number">1.4957</span>, -<span class="number">1.5407</span>,  <span class="number">0.3755</span>, -<span class="number">0.6805</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [ <span class="number">0.1146</span>, -<span class="number">0.8077</span>, -<span class="number">1.4957</span>, -<span class="number">1.5407</span>,  <span class="number">0.3755</span>, -<span class="number">0.6805</span>],</span><br><span class="line">         [-<span class="number">0.0387</span>,  <span class="number">0.8401</span>,  <span class="number">1.6871</span>,  <span class="number">0.3057</span>, -<span class="number">0.8248</span>, -<span class="number">0.1326</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.0387</span>,  <span class="number">0.8401</span>,  <span class="number">1.6871</span>,  <span class="number">0.3057</span>, -<span class="number">0.8248</span>, -<span class="number">0.1326</span>],</span><br><span class="line">         [-<span class="number">0.3745</span>, -<span class="number">1.9178</span>, -<span class="number">0.2928</span>,  <span class="number">0.6510</span>,  <span class="number">0.9621</span>, -<span class="number">1.3871</span>],</span><br><span class="line">         [-<span class="number">0.6739</span>,  <span class="number">0.3931</span>,  <span class="number">0.1464</span>,  <span class="number">1.4965</span>, -<span class="number">0.9210</span>, -<span class="number">0.0995</span>]],</span><br><span class="line"></span><br><span class="line">        [[-<span class="number">0.2675</span>,  <span class="number">1.8021</span>,  <span class="number">1.4966</span>,  <span class="number">0.6988</span>,  <span class="number">1.4770</span>,  <span class="number">1.1235</span>],</span><br><span class="line">         [-<span class="number">0.7411</span>,  <span class="number">0.7948</span>, -<span class="number">1.5864</span>,  <span class="number">0.1176</span>,  <span class="number">0.0789</span>, -<span class="number">0.3376</span>],</span><br><span class="line">         [-<span class="number">0.3745</span>, -<span class="number">1.9178</span>, -<span class="number">0.2928</span>,  <span class="number">0.6510</span>,  <span class="number">0.9621</span>, -<span class="number">1.3871</span>]],</span><br><span class="line"></span><br><span class="line">        [[ <span class="number">0.2837</span>,  <span class="number">0.5629</span>,  <span class="number">1.0398</span>,  <span class="number">2.0679</span>, -<span class="number">1.0122</span>, -<span class="number">0.2714</span>],</span><br><span class="line">         [ <span class="number">0.2837</span>,  <span class="number">0.5629</span>,  <span class="number">1.0398</span>,  <span class="number">2.0679</span>, -<span class="number">1.0122</span>, -<span class="number">0.2714</span>],</span><br><span class="line">         [ <span class="number">0.2242</span>, -<span class="number">1.2474</span>,  <span class="number">0.3882</span>,  <span class="number">0.2814</span>, -<span class="number">0.4796</span>,  <span class="number">0.3732</span>]]],</span><br><span class="line">       grad_fn=&lt;EmbeddingBackward&gt;)</span><br></pre></td></tr></table></figure>
-
-<p>可以得出输出的维度为 [seq_len, batch_size, embedding_size]。</p>
-<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BiLSTM</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, embedding_dim, hidden_dim, n_layers</span>):</span>        </span><br><span class="line">        <span class="built_in">super</span>(BiLSTM_Attention, self).__init__()</span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.n_layers = n_layers</span><br><span class="line">        self.embedding = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        self.rnn = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=n_layers, bidirectional=<span class="literal">True</span>, dropout=<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        <span class="comment"># embedding: [seq_len, batch, embedding_dim]</span></span><br><span class="line">        embedding = self.dropout(self.embedding(x))</span><br><span class="line">        <span class="comment"># output: [seq_len, batch, hidden_dim*2] -&gt; [batch,seq_len, hidden_dim*2]</span></span><br><span class="line">        output, (hidden_state, cell_state) = self.rnn(embedding)</span><br><span class="line">        output = output.permute(<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
-
-
-
-<p>度量学习</p>
-<p><img src="D:\markdown\images\image-20211118185929006.png" alt="image-20211118185929006"></p>
-<p><img src="D:\markdown\images\image-20211118190039010.png" alt="image-20211118190039010"></p>
-<p><img src="D:\markdown\images\image-20211118190148552.png" alt="image-20211118190148552"></p>
-<p><img src="D:\markdown\images\image-20211118190333360.png" alt="image-20211118190333360"></p>
-<p><img src="D:\markdown\images\image-20211118190411230.png" alt="image-20211118190411230"></p>
-<p>3500条，细粒度（九类），三个侮辱性等级</p>
-<ol>
-<li>文本相似度——欧氏距离 –&gt; </li>
-<li>有监督对比学习引入位置</li>
-</ol>
+<h4 id="embedding"><a href="#embedding" class="headerlink" title="embedding"></a>embedding</h4><p>Token Embedding + Segment Embedding（A句 or B句）+ Position Embedding</p>
+<h4 id="encoder"><a href="#encoder" class="headerlink" title="encoder"></a>encoder</h4><p>12 * transformer encoder</p>
 ]]></content>
       <tags>
-        <tag>pytorch</tag>
-        <tag>深度学习</tag>
+        <tag>NLP</tag>
       </tags>
   </entry>
   <entry>
@@ -574,6 +694,134 @@
       </tags>
   </entry>
   <entry>
+    <title>排序（三）：谁主沉浮——堆与堆排序</title>
+    <url>/2022/01/03/%E5%A0%86%E6%8E%92%E5%BA%8F/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>leetcode：<a href="https://leetcode-cn.com/problems/sort-an-array/">https://leetcode-cn.com/problems/sort-an-array/</a></p>
+<h1 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h1><h2 id="定义-amp-amp-性质"><a href="#定义-amp-amp-性质" class="headerlink" title="定义&amp;&amp;性质"></a>定义&amp;&amp;性质</h2><p>堆（<strong>heap</strong>）是计算机科学中一类特殊的数据结构的统称，通常是一个可以被看作是一棵树的数组对象。</p>
+<p><strong>定义</strong>：n 个元素的序列 {k1,k2,ki,…,kn} 当且仅当满足下关系时，称之为堆。$k_i \le k_{2i}$ 且 $ k_i \le k_{2i+1}$ 或者 $k_i \ge k_{2i}$ 且 $ k_i \ge k_{2i+1}$。若以一维数组存储此序列，并将数组视为完全二叉树，可知非叶子节点的值均不大于（或不小于）其左右子节点的值，堆顶元素（即二叉树的根）必为序列中 n 个元素的最小值。</p>
+<p><strong>性质</strong>：</p>
+<ul>
+<li>堆中某个节点的值总是不大于或不小于其父节点的值；</li>
+<li>堆总是一棵完全二叉树。</li>
+</ul>
+<img src="/images/article/排序/heap.png" alt="img" style="zoom:80%;"/>
+
+<h2 id="堆的建立方法"><a href="#堆的建立方法" class="headerlink" title="堆的建立方法"></a>堆的建立方法</h2><h3 id="筛选法：下调"><a href="#筛选法：下调" class="headerlink" title="筛选法：下调"></a>筛选法：下调</h3><p>设堆共有 n 个节点，深度为 $log_2(n)$，设为 k。按照<strong>从下到上，从右到左</strong>的方法找到第一个非叶子节点 i（索引为 n/2）开始调整，使以该节点为根节点的子树为大顶堆。</p>
+<p><strong>调整策略</strong>：</p>
+<ul>
+<li>取左右子节点中较大的一个与节点 i 比较；</li>
+<li>若大于节点 i，父子交换值。若子节点仍有子节点（即节点 i 有孙子节点），则继续向下调整，确保以子节点为根节点的子树为大顶堆；</li>
+<li>若小于节点 i，说明当前子树为大顶堆，结束。</li>
+</ul>
+<p>根据树的相关性质，又有：</p>
+<ul>
+<li>第 i 层最多有节点 $2^{i -1} $ 个；</li>
+<li>非叶子节点的深度为 [0, k - 1] 即 [0, $log_2 n-1$]</li>
+<li>利用筛选法建堆，每层每个节点最多比较两次——<strong>父节点与两个子节点比较</strong>；</li>
+<li>第 k - 1 层的节点最多下调一层，第 k - i 层的节点最多下调 i 层…以此类推。</li>
+</ul>
+<p>所以，$S(k) = \sum_{i = 1}^{k-1}2^{i-1}*(k-i)*2$，时间复杂度 $A(n) = O(n)$。</p>
+<img src="/images/article/排序/筛选法建堆时间复杂度.png" alt="img" style="zoom:80%;"/>
+
+<h3 id="插入法：上浮"><a href="#插入法：上浮" class="headerlink" title="插入法：上浮"></a>插入法：上浮</h3><p><strong>调整策略</strong>：</p>
+<ul>
+<li>插入新元素时，只与它的父节点比较，无需和兄弟节点比较，上调一层，比较一次。二叉树第 i 层最多有 $2^{i-1}$ 个节点，每个节点最多上调 i - 1。</li>
+</ul>
+<p>所以，$S(k) = \sum_{i = 2}^{k}2^{i-1}*(i-1)$，时间复杂度 $A(n) = O(nlogn)$。</p>
+<img src="/images/article/排序/插入法建堆时间复杂度.png" alt="img"/>
+
+<h1 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h1><h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><p>堆排序的基本思想是:</p>
+<ul>
+<li>将待排序的序列构造成一个大顶堆。此时，整个序列的最大值就是堆顶的根节点。</li>
+<li>将其与末尾元素进行交换，此时末尾元素为最大值。</li>
+<li>然后将剩余 n-1 个元素重新构造成大顶堆，得到 n 个元素的次大值。如此反复执行，最终得到一个有序序列。</li>
+</ul>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p><strong>筛选法</strong>建堆后堆排序：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> len = nums.length;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = len/<span class="number">2</span> - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)&#123;</span><br><span class="line">            AdjustHeap(nums, i, len);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = len - <span class="number">1</span>; j &gt; <span class="number">0</span>; j--)&#123;</span><br><span class="line">            <span class="keyword">int</span> temp = nums[j];</span><br><span class="line">            nums[j] = nums[<span class="number">0</span>];</span><br><span class="line">            nums[<span class="number">0</span>] = temp;</span><br><span class="line">            AdjustHeap(nums, <span class="number">0</span>, j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AdjustHeap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i, <span class="keyword">int</span> size)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> temp = nums[i];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> child = <span class="number">2</span>*i+<span class="number">1</span>; child &lt; size; child = <span class="number">2</span>*child+<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="comment">// 选择较大的子节点进行比较</span></span><br><span class="line">            <span class="keyword">if</span>(child+<span class="number">1</span> &lt; size &amp;&amp; nums[child+<span class="number">1</span>] &gt; nums[child])</span><br><span class="line">                child++;</span><br><span class="line">            <span class="comment">// 父节点小于子节点，向下继续调整</span></span><br><span class="line">            <span class="keyword">if</span>(temp &lt; nums[child])&#123;</span><br><span class="line">                nums[i] = nums[child];</span><br><span class="line">                i = child;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 父节点大于子节点，符合大顶堆，跳出循环</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        nums[i] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>插入法</strong>建堆后堆排序：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> copy[] = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">50000</span>];  </span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] sortArray(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> len = nums.length;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++)</span><br><span class="line">            BuildHeap(nums, i);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = len - <span class="number">1</span>; j &gt; <span class="number">0</span>; j--)&#123;</span><br><span class="line">            swap(copy, j, <span class="number">0</span>);</span><br><span class="line">            AdjustHeap(copy, <span class="number">0</span>, j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++)</span><br><span class="line">            nums[i] = copy[i];</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BuildHeap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">        copy[i] = nums[i];</span><br><span class="line">        <span class="comment">// 子节点与父节点比较，如果大于父节点就上调</span></span><br><span class="line">        <span class="comment">// 父节点索引(i-1)/2</span></span><br><span class="line">        <span class="keyword">while</span>(i &gt; <span class="number">0</span> &amp;&amp; copy[(i-<span class="number">1</span>)/<span class="number">2</span>] &lt; copy[i])&#123;</span><br><span class="line">            swap(copy, (i-<span class="number">1</span>)/<span class="number">2</span>, i);</span><br><span class="line">            i = (i-<span class="number">1</span>)/<span class="number">2</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AdjustHeap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i, <span class="keyword">int</span> size)</span></span>&#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        代码见筛选法建堆</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h2><p>堆排序的最优、最差和平均时间复杂度都为 $O(nlogn)$ ，是常用的排序算法中<strong>最稳定的排序方法</strong>，实验表明堆排序的稳定性优于归并排序。</p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>算法</tag>
+        <tag>排序</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第一篇小作文</title>
+    <url>/2021/12/05/%E6%84%9F%E8%B0%A2%E8%B7%AF%E4%B8%8A%E7%9A%84%E6%AF%8F%E4%B8%80%E4%B8%AA%E4%BA%BA%E2%9D%A4/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote>
+<p><strong>题记</strong>：在写碎碎念这方面，我似乎是得到了老板的一些亲传的。就当做圈地自萌好啦。</p>
+</blockquote>
+<p>如果不是因为昨天午睡时间太长，导致大半夜说睡不着然后文思泉涌，这篇小作文本来是打算元旦那天写的，不过即写之则安之，开了个头就把它写完吧。</p>
+<h2 id="感谢路上的每一个人❤"><a href="#感谢路上的每一个人❤" class="headerlink" title="感谢路上的每一个人❤"></a>感谢路上的每一个人❤</h2><p>年底了，又快到了辞旧迎新的时刻。回首过去的一年，与许多老朋友挥手告别，也与许多新朋友打成一片。（此处略去煽情片段300字）</p>
+<p>还记得大四的时候，对自己的计算机研究生生活有些迷茫，不喜欢在深不可测的算法中扑腾，一度差点被本科导员游说去做兼职辅导员，可以说是黑历史了。但是，在三个月的成长中，每天都能发现自己一点一滴的进步，对自己的科研方向“网络不良言论检测”又比较感兴趣，（<strong>但还是希望明年老板能给我换个开心一点的课题，英文还好，中文垃圾评论真的受不了</strong>），无论最终成果如何，都乐于去进行一些尝试。局势在向好的方向发展，虽然依然是个小白，但是比起几个月前更有底气。希望在未来不要妄自菲薄，要相信自己有足够的勇气和头发应对生活的毒打（<strong>虽然头发好像有它们自己的想法</strong>😅）。</p>
+<center><img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206212137490.png" alt="论文" style="zoom:60%;" /> <br> <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">昨天看的一篇paper，最近都是这种奇奇怪怪的</div> </center>
+
+<br>
+
+<p>感觉自己真的好幸运，遇到的每一个同学都很温柔。高中住校时，有几个可以站在阳台互诉自己暗恋的小姐姐的朋友，也有几个可以一起去厕所熬夜写作业的童鞋（虽然后来宵禁被禁止了）；大学时，总能约到一起干饭、一起自习、一起跑步、一起泡实验室（<strong>实际是在创院养老</strong>🍵）的志同道合的同志；而在研究生，虽然只有不到一个学期，但无论是寝室中朝夕相伴、耳鬓厮磨的舍友，亦或是实验室中报团取暖、唇齿相依的工友，又或是外表高冷内心呆萌时时投喂的师兄师姐们（<strong>这里的形容词用的怪怪的</strong>），都给我带来了很多快乐。</p>
+<p>身边的每个人都很努力，都有好多东西值得我去学习，这里有常常加班通宵的高中同学，也有奋战在科研一线的博士师兄，他们也会 emo，抱怨上天的不公，但是睡一大觉后，转头又重振旗鼓，直面生活的挑战。In a word，每个人都是伟大的战士，心里很感谢，看到他们，也想让自己变得更好。</p>
+<center><img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206212140774.jpg" alt="篮球场" style="zoom:60%;" /> <br> <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">傍晚时大黑楼前的篮球场</div> </center>
+
+<br>
+
+<p>感谢老板，给我足够高的自由度，让我可以按照自己的状态自由修（mo）炼（🐟），头一晚失眠的话第二天可以赖（tang）床（shi），每次找他一边听他满面春风讲着互联网的方兴未艾和人口红利，一遍感慨导的豁达乐观和<strong>头发茂密</strong>；感谢小导，总是温和耐心地提出指点和建议，还帮我们淸点发票，上一秒正说着方法和模型，下一秒说起了冷笑话。许多时候，感受更多的不是老师们的能力本身，而是他们为人处世的方法和态度。</p>
+<p>11月发生了许多小事：<strong>比如说</strong>，在参与校园三行情诗（本科生）的活动后，又把该周的算法作业发到了三行诗主办的邮箱里，感谢管理邮箱的学弟的提醒，重新向老师发送了作业，正如 ky 哥哥所说的那样：还好，你没把情诗发给老师；<strong>再比如</strong>，参加 CCIR 结果记错英语课补课的时间，感觉 gg 了，怀着坎坷的心情向老师连声道歉，换来一句：没关系，可以理解，不用补了🤗🤭；<strong>又比如</strong>，昨天洗澡的时候不小心把耳机掉在了地上，以为钻进了放衣柜与地砖间的缝隙，被大爷注意到我的窘状，拿着一个小棍帮我捅，想把它找到，耽误大爷和周围的同学好久也没有找到，连声道歉添麻烦了，大爷说没事没事，去一楼吹头后出来，迎面碰到大爷，笑着说：正找你呢，掉到下面同学的柜子里了。</p>
+<center><img src="https://dutljy.oss-cn-qingdao.aliyuncs.com/images/202206212137882.jpg" alt="耳机" style="zoom:60%;" /> <br> <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">我多灾多难的耳机</div> </center>
+
+<br>
+
+<p>有时，看着 i 大工的“我赞赞我吐槽”，心里挺不是滋味的。大学四年，从老师到同学，再到许多生活中的“小人物”，都从学业和生活上给予了我很大的帮助，像上面的温暖也有很多很多，真心希望大工能够越来越好。</p>
+<p>上周睡觉梦到家中长辈忽然去世了，梦里哭了好久。之后说完，笑着安慰我这是吉兆，让我去周易☯上查查，一查发现是增寿的预兆，好开心（<strong>不过作为坚定的唯物主义者，我们应该远离迷信</strong>）。越长大越发现，父母和家人的付出是最容易被忽视的，也渐渐明白了什么叫<strong>“子欲养而亲不待”</strong>，渐渐把一些发给同龄人的可爱表情包发给他们，多和他们说说话。感谢他们无论风雨永远站在自己身边。</p>
+<p>感谢一路上的每一个人❤，包容我的任性和坏脾气；也感谢自己，一直坚持着走下去~</p>
+<p>（<strong>第一节结束，渲染的气氛有些凝重了，淦啊。所以第二节要写得跳脱一些！</strong>）</p>
+<h2 id="为未来画一张大饼🍪（这好像是个曲奇）"><a href="#为未来画一张大饼🍪（这好像是个曲奇）" class="headerlink" title="为未来画一张大饼🍪（这好像是个曲奇）"></a>为未来画一张大饼🍪（这好像是个曲奇）</h2><p>记得本科开学典礼上，一位老师讲大学生要<strong>“为天地立心，为生民立命，为往圣继绝学，为万世开太平”</strong>，当时在下面觉得，这个理想似乎有些宏伟，以自己脆弱的红条和蓝条恐怕难以实施。但是，正如《奈克瑟斯奥特曼》中说的那样：<strong>光是纽带，光是传承</strong>。因为感受到了光，所以也想把光分享给需要的人。很天真，但是我现在依然这样想。虽然如此，但是也渐渐明白，不谈面包谈理想终究是镜花水月。</p>
+<p>因此，在这一节，本着<strong>“穷则独自躺平，达则兼济左右”</strong>的基本原则，结合自身的实际状况，做出相关假设，并对未来画一张大饼🍪。</p>
+<p><strong>已知</strong>：</p>
+<ul>
+<li>ljy 比较自律，具备一定的学习能力，喜欢与身边的童鞋讨论奇奇怪怪的问题；</li>
+<li>ljy 比较佛系且喜欢养生，但会对自己感兴趣以及想做的事蜜汁认真和执着；</li>
+<li>相比于有硬性绩效要求的考核机制，ljy 更喜欢依靠自驱力（或者执念）做些自己喜欢的工作；</li>
+<li>目前，高薪对的 ljy 的吸引力一般，这可能是因为目前膝下没有儿女且父母身体比较健康，以及未来并不想在一线城市定居的缘故。</li>
+</ul>
+<p>根据已知条件，做出如下假设：</p>
+<p><strong>假设：</strong></p>
+<ul>
+<li>比起算法 or 开发程序🙉，读博之后从教对 ljy 的吸引力更大；</li>
+<li>比起程序🙉 or 选调生，ljy 更适合读博；</li>
+<li>ljy 会继续利用研一剩余的时间，判断自己是否适合读博。</li>
+</ul>
+<p>基于以上假设，对未来生活画出第一张大饼，记作 $dabing1$：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">dabing1:</span><br><span class="line">begin:</span><br><span class="line">    <span class="keyword">if</span> 研究生阶段ljy顺利毕业:</span><br><span class="line">        <span class="keyword">if</span> ljy对读博有强烈意愿:</span><br><span class="line">            <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">            虚位以待</span></span><br><span class="line"><span class="string">            &#x27;&#x27;&#x27;</span></span><br><span class="line">            找个教职教书育人，和学生讨论问题；同时，找一个女孩，说服她和自己一起还房贷；教书回家早就做做饭，晚上辅导孩子作业题；如果有心，也有进军工业界的可能。</span><br><span class="line">        <span class="keyword">elif</span> ljy还在读博和上班之间举棋不定:</span><br><span class="line">            去上班<span class="number">1</span>~<span class="number">2</span>年</span><br><span class="line">            <span class="keyword">if</span> 觉得上班真的不适合自己:</span><br><span class="line">                <span class="keyword">if</span> 读博之心不死:</span><br><span class="line">                    读博</span><br><span class="line">                    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">                    虚位以待</span></span><br><span class="line"><span class="string">                    &#x27;&#x27;&#x27;</span></span><br><span class="line">                    找个教职教书育人，和学生讨论问题；同时，找一个女孩，说服她和自己一起还房贷，回家做饭辅导孩子作业题；也不乏有重返工业界的可能。</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    回北方某个城市的初中教物理（高中生升学压力，小学生..，感觉初中生好管理一点？）</span><br><span class="line">                    找一个女孩，说服她和自己一起还房贷；下班回家做饭辅导孩子作业题</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                干！</span><br><span class="line">                <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">                虚位以待</span></span><br><span class="line"><span class="string">                &#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        目前来看，应该不会有这种<span class="keyword">else</span></span><br><span class="line">end.</span><br></pre></td></tr></table></figure>
+
+<p>根据以上大饼，我们发现：<strong>woc，怎么就还房贷那里比较清晰（其实也不咋清晰）呢，这可不行啊。</strong>略一沉吟，画出第二张大饼🍪，记作 $dabing2$：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">dabing2:</span><br><span class="line">begin:</span><br><span class="line">    干肝淦！</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    虚位以待</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">end.</span><br></pre></td></tr></table></figure>
+
+<p>相比于 $dabing1$，$dabing2$ 具有更强的泛化能力，对不同的情况能够尽快作出调整，一定程度上解决了长距离依赖的问题；同时目标明确，减少了不必要的脑细胞死亡，整体性能更为优越，鹅美净啊(*^$_▽$^*)  </p>
+<p><strong>毕竟，不能让已知和假设限制自己的思维，ZERO就是要有无限的可能性。</strong></p>
+<p>以上就是对未来画的一张大饼，也欢迎大家在留言区画出自己的大饼~</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>啰里啰嗦说了一堆，有点写不动了o(╥﹏╥)o。如果你看到了这里，也谢谢你能够接受一个失眠患者的碎碎念。</p>
+<p><strong>希望几年后的自己，看着今天感激的人、谋划的饼，能够心中无悔；也希望每个人都能找到自己努力的方向和节奏，做最好的自己</strong>。</p>
+<p>看一眼字数统计，不想再思考了，就以本科毕设的致谢和《共产党宣言》最后一段作为小作文的结尾叭~</p>
+<center><B><I>虽长路漫漫，亦载笑载歌，烟雨任平生。</I></B></center>
+
+<center><B><I>全世界无产者，联合起来！</I></B></center>
+
+<br>
+
+<blockquote>
+<p><strong>题记</strong>：感觉现在写作文没有高中时代那种汪洋恣肆、挥斥方遒的劲了，越来越像小学生写日记，好像还是小女生😅</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>blog</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>排序（一）——简单排序：插入排序 &amp;&amp; 冒泡排序</title>
     <url>/2021/09/19/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>leetcode：<a href="https://leetcode-cn.com/problems/sort-an-array/">https://leetcode-cn.com/problems/sort-an-array/</a></p>
@@ -633,254 +881,6 @@
         <tag>Java</tag>
         <tag>算法</tag>
         <tag>排序</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>UDP传递字节数据</title>
-    <url>/2021/09/19/UDP/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h1><p>UDP传递数据不要连接，知道对方地址即可。</p>
-<h2 id="UDP传递字节数据"><a href="#UDP传递字节数据" class="headerlink" title="UDP传递字节数据"></a>UDP传递字节数据</h2><p><strong>客户端：</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson3;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.DatagramPacket;</span><br><span class="line"><span class="keyword">import</span> java.net.DatagramSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UdpClientDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        <span class="comment">// 创建一个socket</span></span><br><span class="line">        DatagramSocket socket = <span class="keyword">new</span> DatagramSocket();</span><br><span class="line">        <span class="comment">// 新建一个包</span></span><br><span class="line">        String msg = <span class="string">&quot;Hello world!&quot;</span>;</span><br><span class="line">        <span class="comment">// 确定接受端ip和接口</span></span><br><span class="line">        InetAddress localhost = InetAddress.getByName(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">9000</span>;</span><br><span class="line">        DatagramPacket packet = <span class="keyword">new</span> DatagramPacket(msg.getBytes(), <span class="number">0</span>, msg.length(), localhost, <span class="number">9000</span>); ;</span><br><span class="line"></span><br><span class="line">        socket.send(packet);</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>服务端：</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson3;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.DatagramPacket;</span><br><span class="line"><span class="keyword">import</span> java.net.DatagramSocket;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UdpServerDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//创建socket</span></span><br><span class="line">        DatagramSocket socket = <span class="keyword">new</span> DatagramSocket(<span class="number">9000</span>);</span><br><span class="line">        <span class="comment">//buffer</span></span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        DatagramPacket packet = <span class="keyword">new</span> DatagramPacket(buffer, <span class="number">0</span>, buffer.length);</span><br><span class="line">        socket.receive(packet);</span><br><span class="line">        <span class="comment">// getAddress: 返回此InetAddress对象的原始IP地址。 getHostAddress: 返回文本显示中的IP地址字符串。</span></span><br><span class="line">        System.out.println(packet.getAddress().getHostAddress());</span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(packet.getData(), <span class="number">0</span>, packet.getLength()));</span><br><span class="line"></span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>网络编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>TCP传递字节数据和文件</title>
-    <url>/2021/09/19/TCP%E4%B8%8EUDP/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h1><h2 id="TCP传递字节数据"><a href="#TCP传递字节数据" class="headerlink" title="TCP传递字节数据"></a>TCP传递字节数据</h2><p>在 OutputStream 和 InputStream 的外面套用字节流管道ByteArrayIn(Out)putStream 实现文件的传输。</p>
-<p><img src="/images/article/image-20210915104325376.png" alt="image-20210915104325376"></p>
-<p><strong>注意：</strong>read()从输入流中读取下一个字节，若没有字节可读（也就是read()读到文件最后了），则返回-1。利用如下代码进行读取：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">while</span> ((len = is.read(buffer)) != -<span class="number">1</span>) &#123;</span><br><span class="line">    baos.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>服务端：</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">//服务端</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpServerDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">null</span>;</span><br><span class="line">        Socket socket = <span class="keyword">null</span>;</span><br><span class="line">        InputStream is = <span class="keyword">null</span>;</span><br><span class="line">        ByteArrayOutputStream baos = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 服务器地址</span></span><br><span class="line">            serverSocket = <span class="keyword">new</span> ServerSocket(<span class="number">9999</span>);</span><br><span class="line">            <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">// 等待客户端连接</span></span><br><span class="line">                socket = serverSocket.accept();</span><br><span class="line">                <span class="comment">// 读取消息</span></span><br><span class="line">                is = socket.getInputStream();</span><br><span class="line">                <span class="comment">// 利用管道流实现通讯</span></span><br><span class="line">                baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">                <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">                <span class="keyword">int</span> len;</span><br><span class="line">                <span class="keyword">while</span> ((len = is.read(buffer)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                    baos.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                System.out.println(baos.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// 关闭资源</span></span><br><span class="line">            <span class="keyword">if</span>(baos != <span class="keyword">null</span>)&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    baos.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">            略去is、socket、serversocket的关闭</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>客户端：</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">//客户端</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpClientDemo01</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        InetAddress serverIP = <span class="keyword">null</span>;</span><br><span class="line">        Socket socket = <span class="keyword">null</span>;</span><br><span class="line">        OutputStream os = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 获取服务器地址IP、端口号</span></span><br><span class="line">            serverIP = InetAddress.getByName(<span class="string">&quot;127.0.0.1&quot;</span>);</span><br><span class="line">            <span class="keyword">int</span> port = <span class="number">9999</span>;</span><br><span class="line">            <span class="comment">// 创建连接</span></span><br><span class="line">            socket = <span class="keyword">new</span> Socket(<span class="string">&quot;127.0.0.1&quot;</span>, port);</span><br><span class="line">            <span class="comment">// 发送消息</span></span><br><span class="line">            os = socket.getOutputStream();</span><br><span class="line">            os.write(<span class="string">&quot;你好，欢迎学习网络编程&quot;</span>.getBytes());</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/*关闭资源</span></span><br><span class="line"><span class="comment">            略去</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="TCP传递文件"><a href="#TCP传递文件" class="headerlink" title="TCP传递文件"></a>TCP传递文件</h2><p>文件在连接中以字节流形式传递。引入 FileOut(In)putStream.</p>
-<p><img src="/images/article/image-20210915104632382.png" alt="image-20210915104632382"></p>
-<p><strong>服务端：</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpServerDemo02</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// 服务器连接</span></span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">new</span> ServerSocket(<span class="number">9000</span>);</span><br><span class="line">        <span class="comment">//  监听</span></span><br><span class="line">        Socket socket = serverSocket.accept(); <span class="comment">//阻塞式监听，会一直等待客户端连接</span></span><br><span class="line">        <span class="comment">// 获取输入流</span></span><br><span class="line">        InputStream is = socket.getInputStream();</span><br><span class="line">        <span class="comment">// 文件输出</span></span><br><span class="line">        FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;receive.jpg&quot;</span>);</span><br><span class="line">        <span class="comment">//System.out.println(&quot;OK?&quot;);</span></span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> len;</span><br><span class="line">        <span class="keyword">while</span>((len = is.read(buffer)) != -<span class="number">1</span>)&#123;</span><br><span class="line">            fos.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 告知客户端接收完毕</span></span><br><span class="line">        OutputStream os = socket.getOutputStream();  <span class="comment">//如果不关掉连接，服务端始终监听</span></span><br><span class="line">        os.write(<span class="string">&quot;我已经接收完毕了&quot;</span>.getBytes());</span><br><span class="line">        <span class="comment">// 关闭资源</span></span><br><span class="line">        os.close();;</span><br><span class="line">        fos.close();</span><br><span class="line">        is.close();</span><br><span class="line">        socket.close();</span><br><span class="line">        serverSocket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>客户端：</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpClientDemo02</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        <span class="comment">// 创建链接</span></span><br><span class="line">        Socket socket = <span class="keyword">new</span> Socket(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">9000</span>);</span><br><span class="line">        <span class="comment">// 创建输出流</span></span><br><span class="line">        OutputStream os = socket.getOutputStream();</span><br><span class="line">        <span class="comment">// 文件流</span></span><br><span class="line">        FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="keyword">new</span> File(<span class="string">&quot;test.jpg&quot;</span>));</span><br><span class="line">        <span class="comment">// 写出文件</span></span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> len;</span><br><span class="line">        <span class="keyword">while</span>((len = fis.read(buffer)) != -<span class="number">1</span>)&#123;</span><br><span class="line">            os.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//通知服务器已经传输完毕</span></span><br><span class="line">        socket.shutdownOutput();</span><br><span class="line">        <span class="comment">//System.out.println(&quot;Has sent!&quot;);</span></span><br><span class="line">        <span class="comment">//确定服务器接收完毕，断开连接</span></span><br><span class="line">        InputStream is = socket.getInputStream();</span><br><span class="line">        ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        <span class="keyword">byte</span>[] buffer2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> len2;</span><br><span class="line">        <span class="keyword">while</span>((len2 = is.read(buffer2)) != -<span class="number">1</span>)&#123;</span><br><span class="line">            baos.write(buffer2, <span class="number">0</span>, len2);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(baos.toString());</span><br><span class="line">        <span class="comment">// 关闭</span></span><br><span class="line">        baos.close();</span><br><span class="line">        is.close();</span><br><span class="line">        fis.close();</span><br><span class="line">        os.close();</span><br><span class="line">        socket.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>网络编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>IP地址与端口</title>
-    <url>/2021/09/19/IP%E5%92%8C%E7%AB%AF%E5%8F%A3/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h1><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p><strong>IP地址的作用</strong>：唯一定位网络上的计算机。</p>
-<p><strong>IP地址分类</strong>：</p>
-<p>从网际协议版本上：</p>
-<table>
-<thead>
-<tr>
-<th>协议版本</th>
-<th>介绍</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>IPv4</td>
-<td>127.0.0.1<br/>32位，4个字节组成，每个数字范围0~255，约42亿个<br/>2011年已用尽</td>
-</tr>
-<tr>
-<td>IPv6</td>
-<td>fe80::f468:b07b:9f96:bdca%2<br/>128位（8个无符号整数）</td>
-</tr>
-</tbody></table>
-<p>从接入方式上：</p>
-<table>
-<thead>
-<tr>
-<th>接入方式</th>
-<th>介绍</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>公网（互联网）</td>
-<td>计算机得到的IP地址互联网上的非保留地址</td>
-</tr>
-<tr>
-<td>私网（局域网）</td>
-<td>192.168.<em>.</em><br/>指在某一区域内由多台计算机互联成的计算机组，<strong>分为ABCD…类</strong></td>
-</tr>
-</tbody></table>
-<p><strong>域名的作用</strong>：记忆IP</p>
-<h2 id="命令行查看IP地址"><a href="#命令行查看IP地址" class="headerlink" title="命令行查看IP地址"></a>命令行查看IP地址</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ipconfig  <span class="comment">#查看ip</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="InetAddress"><a href="#InetAddress" class="headerlink" title="InetAddress"></a>InetAddress</h2><p>InetAddress：此类表示Internet协议（IP）地址。 <strong>注意：</strong>InetAddress构造方法私有，只能通过其他成员函数新建对象。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.UnknownHostException;</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试IP</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestIDAddress</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//getByName:根据提供的主机名和IP地址创建 InetAddress</span></span><br><span class="line">            <span class="comment">//查询本机地址</span></span><br><span class="line">            InetAddress inetAddress1 = InetAddress.getByName(<span class="string">&quot;127.0.0.1&quot;</span>);</span><br><span class="line">            System.out.println(inetAddress1);</span><br><span class="line">            InetAddress inetAddress2 = InetAddress.getByName(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">            System.out.println(inetAddress2);</span><br><span class="line">            InetAddress inetAddress3 = InetAddress.getLocalHost();</span><br><span class="line">            System.out.println(inetAddress3);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//查询网络地址</span></span><br><span class="line">            InetAddress inetAddress4 = InetAddress.getByName(<span class="string">&quot;www.baidu.com&quot;</span>);</span><br><span class="line">            System.out.println(inetAddress4);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//常用方法</span></span><br><span class="line">            System.out.println(inetAddress4.getAddress());  <span class="comment">//返回此 InetAddress对象的原始IP地址。</span></span><br><span class="line">            System.out.println(inetAddress4.getCanonicalHostName());  <span class="comment">//获取此IP地址的完全限定域名(规范的名字——ip)</span></span><br><span class="line">            System.out.println(inetAddress4.getHostAddress());  <span class="comment">//ip</span></span><br><span class="line">            System.out.println(inetAddress4.getHostName());  <span class="comment">//获取此IP地址的主机名/域名</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnknownHostException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong></p>
-<p>输出结果我们发现：使用 getLocalHost() 方法输出的结果是本机配置的IPv4，而 getByName(“localhost”) 和 getByName(“127.0.0.1”)的输出结果为 127.0.0.1，二者不同。</p>
-<p>引出问题：<a href="https://blog.csdn.net/ithover/article/details/78916998?utm_medium=distribute.pc_relevant.none-task-blog-2~default~essearch~vector-6.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~essearch~vector-6.no_search_link">localhost、127.0.0.1 和 本机IP 三者的区别</a></p>
-<h3 id="配置映射地址"><a href="#配置映射地址" class="headerlink" title="*配置映射地址"></a>*配置映射地址</h3><p>在C:\Windows\System32\drivers\etc\hosts文件下可以配置127.0.0.1的映射地址。格式示例：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">127.0.0.1	www.baidu.com</span><br></pre></td></tr></table></figure>
-
-<h1 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h1><h2 id="基础知识-1"><a href="#基础知识-1" class="headerlink" title="基础知识"></a>基础知识</h2><p><strong>端口的作用</strong>：区分不同应用进程间的网络通信和连接，规定为0 ~ 65535。TCP/UDP：65535 * 2 ，单个协议下，端口号不能冲突。</p>
-<p><strong>通信三要素</strong>：通信的目的IP地址、使用的传输层协议(TCP 或 UDP)和使用的端口号。</p>
-<p><strong>端口分类</strong>：</p>
-<table>
-<thead>
-<tr>
-<th>种类</th>
-<th align="left">示例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>公有端口0 ~ 1023</td>
-<td align="left">HTTP：80<br/>    HTTPS：443<br/>    FTP：21<br/>    Telent：23</td>
-</tr>
-<tr>
-<td>程序注册端口：1024 ~ 49151<br/>分配给用户或者程序</td>
-<td align="left">Tomcat：8080<br/>    MySQL：3306<br/>    Oracle：1512</td>
-</tr>
-<tr>
-<td>动态、私有：49152 ~ 65535</td>
-<td align="left"></td>
-</tr>
-</tbody></table>
-<h2 id="命令行查看端口信息"><a href="#命令行查看端口信息" class="headerlink" title="命令行查看端口信息"></a>命令行查看端口信息</h2><p>win+R打开命令行，输入以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">netstat -ano  <span class="comment">#查看所有的端口</span></span><br><span class="line">netstat -ano | findstr <span class="string">&quot;5900&quot;</span>  <span class="comment">#查看指定的端口</span></span><br><span class="line">tasklist | findstr <span class="string">&quot;8696&quot;</span>  <span class="comment">#查看指定端口的进程</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="InetSocketAddress"><a href="#InetSocketAddress" class="headerlink" title="InetSocketAddress"></a>InetSocketAddress</h2><p>InetSocketAddress：该类实现IP套接字地址<em><strong>IP地址+端口号</strong></em>，也可以是<em><strong>主机名+端口号</strong></em>，在这种情况下将尝试解析主机名。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.kuang.lesson1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.InetSocketAddress;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestInetSocketAddress</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        InetSocketAddress socketAddress = <span class="keyword">new</span> InetSocketAddress(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">8080</span>);</span><br><span class="line">        System.out.println(socketAddress);</span><br><span class="line"></span><br><span class="line">        System.out.println(socketAddress.getAddress());  <span class="comment">//获得 InetAddress / IP地址</span></span><br><span class="line">        System.out.println(socketAddress.getHostName());</span><br><span class="line">        System.out.println(socketAddress.getPort());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>网络编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python爬取知乎回答并进行舆情分析：舆情分析部分</title>
-    <url>/2021/08/27/python_zhihu2/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在上一节中，利用爬虫爬取了<a href="https://www.zhihu.com/question/482094335/answer/2080599564"><strong>问题</strong></a>下的所有回答，原文链接如下：<br><a href="http://dutljy.top/2021/08/24/python_zhihu/">python爬取知乎回答并进行舆情分析：爬取数据部分</a><br>本节中利用jieba工具对回答分词，统计词频生成词云，并利用折线图统计每日回答数，做一个简单的舆情分析。</p>
-<h1 id="生成词云"><a href="#生成词云" class="headerlink" title="生成词云"></a>生成词云</h1><h2 id="文本预处理（使用停用词、自定义分词）"><a href="#文本预处理（使用停用词、自定义分词）" class="headerlink" title="文本预处理（使用停用词、自定义分词）"></a>文本预处理（使用停用词、自定义分词）</h2><p>jieba分词支持<strong>停用词</strong>和<strong>自定义分词</strong>。停用词能够过滤掉与语义无关的单词，自定义分词能够防止指定词汇被切分，例如某些不被一般词典收纳的新潮词汇。</p>
-<p>引包：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> matplotlib</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br></pre></td></tr></table></figure>
-<p>加载词典：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 加载自定义词典  </span></span><br><span class="line">newdict_path = <span class="string">&quot;./source/newdict.txt&quot;</span></span><br><span class="line">jieba.load_userdict(newdict_path)       </span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载停用词词典</span></span><br><span class="line">stop_list = []</span><br><span class="line">stopdict_path = <span class="string">&#x27;./source/stopdict.txt&#x27;</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(stopdict_path, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">        stop_list.append(line[:-<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
-<p>数据预处理：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">data = pd.read_csv(<span class="string">&#x27;./test.csv&#x27;</span>)</span><br><span class="line">data[<span class="string">&#x27;回答&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : x.replace(<span class="string">&#x27;\n&#x27;</span>, <span class="string">&#x27;&#x27;</span>)) </span><br><span class="line">data[<span class="string">&#x27;回答&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : x.replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;&#x27;</span>)) </span><br><span class="line">data[<span class="string">&#x27;分词&#x27;</span>] = data[<span class="string">&#x27;回答&#x27;</span>].apply(<span class="keyword">lambda</span> x : [i <span class="keyword">for</span> i <span class="keyword">in</span> jieba.cut(x) <span class="keyword">if</span> i <span class="keyword">not</span> <span class="keyword">in</span> stop_list])</span><br><span class="line">data[<span class="string">&#x27;创建时间&#x27;</span>] = data[<span class="string">&#x27;创建时间&#x27;</span>].apply(<span class="keyword">lambda</span> x : x[:<span class="number">10</span>])</span><br></pre></td></tr></table></figure>
-
-<h2 id="统计词频"><a href="#统计词频" class="headerlink" title="统计词频"></a>统计词频</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">all_words = data[<span class="string">&#x27;分词&#x27;</span>].to_list()</span><br><span class="line"></span><br><span class="line">word_dict = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> words <span class="keyword">in</span> all_words:</span><br><span class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> words:</span><br><span class="line">        <span class="keyword">if</span> word <span class="keyword">in</span> word_dict:</span><br><span class="line">            word_dict[word] += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            word_dict[word] = <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<h2 id="生成词云-1"><a href="#生成词云-1" class="headerlink" title="生成词云"></a>生成词云</h2><p>利用<strong>wordcloud</strong>绘制词云：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> wordcloud <span class="keyword">import</span> WordCloud</span><br><span class="line"><span class="comment"># 生成词云</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_word_cloud</span>(<span class="params">word_dict</span>):</span></span><br><span class="line">    <span class="comment"># 支持中文, SimHei.ttf可从以下地址下载：https://github.com/cystanford/word_cloud</span></span><br><span class="line">    wc = WordCloud(</span><br><span class="line">        font_path=<span class="string">&quot;./source/SimHei.ttf&quot;</span>,</span><br><span class="line">        background_color=<span class="string">&#x27;white&#x27;</span>,</span><br><span class="line">        max_words=<span class="number">25</span>,</span><br><span class="line">        width=<span class="number">1800</span>,</span><br><span class="line">        height=<span class="number">1200</span>,</span><br><span class="line">    )</span><br><span class="line">    word_cloud = wc.generate_from_frequencies(word_dict)</span><br><span class="line">    <span class="comment"># 写词云图片</span></span><br><span class="line">    word_cloud.to_file(<span class="string">&quot;wordcloud2.jpg&quot;</span>)</span><br><span class="line">    <span class="comment"># 显示词云文件</span></span><br><span class="line">    plt.imshow(word_cloud)</span><br><span class="line">    plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据词频生成词云</span></span><br><span class="line">create_word_cloud(word_dict)</span><br></pre></td></tr></table></figure>
-<p>结果如下：<br><img src="https://img-blog.csdnimg.cn/5e9215aee694425fa89325e3a8a4484d.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center" alt="在这里插入图片描述"></p>
-<h1 id="折线图"><a href="#折线图" class="headerlink" title="折线图"></a>折线图</h1><h2 id="统计每日回答数"><a href="#统计每日回答数" class="headerlink" title="统计每日回答数"></a>统计每日回答数</h2><p>利用字典统计每日回答的数量。：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修正回答时间格式：年-月-日 </span></span><br><span class="line">data[<span class="string">&#x27;创建时间&#x27;</span>] = data[<span class="string">&#x27;创建时间&#x27;</span>].apply(<span class="keyword">lambda</span> x : x[:<span class="number">10</span>])</span><br><span class="line"></span><br><span class="line">date_dict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">all_dates = data[<span class="string">&#x27;创建时间&#x27;</span>].to_list()</span><br><span class="line"><span class="keyword">for</span> date <span class="keyword">in</span> all_dates:</span><br><span class="line">    <span class="keyword">if</span> date <span class="keyword">not</span> <span class="keyword">in</span> date_dict:</span><br><span class="line">        date_dict[date] = <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        date_dict[date] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">x = []</span><br><span class="line">y = []</span><br><span class="line"><span class="keyword">for</span> key,value <span class="keyword">in</span> date_dict.items():</span><br><span class="line">    x.append(key)</span><br><span class="line">    y.append(value)</span><br></pre></td></tr></table></figure>
-
-<h2 id="生成折线图"><a href="#生成折线图" class="headerlink" title="生成折线图"></a>生成折线图</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="comment">#通用设置，背景颜色、图片大小、是否</span></span><br><span class="line">matplotlib.rc(<span class="string">&#x27;axes&#x27;</span>, facecolor = <span class="string">&#x27;white&#x27;</span>)</span><br><span class="line">matplotlib.rc(<span class="string">&#x27;figure&#x27;</span>, figsize = (<span class="number">6</span>, <span class="number">4</span>))</span><br><span class="line">matplotlib.rc(<span class="string">&#x27;axes&#x27;</span>, grid = <span class="literal">True</span>)</span><br><span class="line"><span class="comment">#数据及线属性</span></span><br><span class="line">plt.plot(x, y,<span class="string">&#x27;.-&#x27;</span>)</span><br><span class="line"><span class="comment">#标题设置</span></span><br><span class="line">plt.title(<span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;date&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;amount&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<p>结果如下：<br><img src="https://img-blog.csdnimg.cn/9b3c93065a6640d7a8453a52d0b08a03.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5peg6ZmQ5LmL6Zi_5bCU5rOV,size_10,color_FFFFFF,t_70,g_se,x_16,#pic_center" alt="在这里插入图片描述"></p>
-<h1 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h1><p>除了<strong>回答</strong>和<strong>创建时间</strong>两个字段以外，爬取结果的其他字段也可以进行数据分析；也可以尝试利用user_token做一个用户画像分析。</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>数据分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python爬取知乎回答并进行舆情分析：爬取数据部分</title>
-    <url>/2021/08/24/python_zhihu/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>近期导师让我从社交媒体平台（包括微博、知乎、贴吧等）爬取用户评论数据，并进行相应的舆情分析。之前爬取过贴吧和微博的数据，这次第一回接触知乎的爬虫，发现还是有区别的。写篇博客记录一下~</p>
-<h1 id="Ajax原理介绍"><a href="#Ajax原理介绍" class="headerlink" title="Ajax原理介绍"></a>Ajax原理介绍</h1><p>利用google浏览器打开知乎中任意问题（本文中示例问题为 <a href="https://www.zhihu.com/question/482094335/answer/2080599564"><strong>如何看待天府少年团改名熊猫少儿艺术团，公司称「不做饭圈文化，没有资本运作，爱舞台的孩子做有意义的事」？</strong></a>），发现知乎采取动态加载技术，内容块只有在浏览器下滚时才会刷新。与微博和贴吧不同，知乎的html文件中没有“下一页”的相关节点，无法直接解析。因此需要从原始的Request报文着手，获取文本数据。</p>
-<p><strong>Ajax</strong>(Asynchronous Java and XML的缩写)是一种异步请求数据的web开发技术，能够改善用户的体验，提高页面性能。</p>
-<p>Ajax的工作原理相当于在用户和服务器之间加了—个中间层(<strong>XHR</strong>)，使用户操作与服务器响应异步化。并不是所有的用户请求都提交给服务器,像—些数据验证和数据处理等都交给XHR自己来做, 只有确定需要从服务器读取新数据时再由XHR代为向服务器提交请求，示意图如下：<br><img src="https://img-blog.csdnimg.cn/3bca656242a84d8298a4ff0bd00e5545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">在本次爬虫中，利用Ajax技术获取服务器发往浏览器的原始报文。</p>
-<h1 id="Request-URL分析"><a href="#Request-URL分析" class="headerlink" title="Request URL分析"></a>Request URL分析</h1><p>F12进入开发者模式，进入<strong>Network</strong>界面，选择<strong>Fetch/XML</strong>，可以看到各个请求的相关信息。<br><img src="https://img-blog.csdnimg.cn/47792da2a6624b3fbdd1e40154b74437.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">选择其中answers?开头的请求，观察<strong>Request URL</strong>。注意到有两个字段，<strong>offset</strong> 和 <strong>limit</strong>，其中 <strong>offset</strong> 指的是报文中第一个回答对应的索引号（从0开始），<strong>limit</strong> 指的是一条报文中能够包含的最多的回答数。用户可以在URL定义这两个值。</p>
-<p><strong>在设定时应当注意</strong>：<br>offset 不能超过回答总数 - 1；<br>limit 不能超过上限。<br><img src="https://img-blog.csdnimg.cn/f1643c2ade5e471d8c2ef3c485af50ea.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQzMDgwNjA5,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">为了便于观察json数据报格式，将 limit 设定为1，复制以下URL即可查看json报文信息。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">https://www.zhihu.com/api/v4/questions/<span class="number">482094335</span>/answers?include=data%5B*%5D.is_normal%2Cadmin_closed_comment%2Creward_info%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cattachment%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelevant_info%2Cquestion%2Cexcerpt%2Cis_labeled%2Cpaid_info%2Cpaid_info_content%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cis_recognized%3Bdata%5B*%5D.mark_infos%5B*%5D.url%3Bdata%5B*%5D.author.follower_count%2Cvip_info%2Cbadge%5B*%5D.topics%3Bdata%5B*%5D.settings.table_of_content.enabled&amp;offset=<span class="number">0</span>&amp;limit=<span class="number">1</span>&amp;sort_by=default&amp;platform=desktop</span><br></pre></td></tr></table></figure>
-
-<h1 id="json报文结构分析"><a href="#json报文结构分析" class="headerlink" title="json报文结构分析"></a>json报文结构分析</h1><p>下面对json报文进行结构分析，报文主要分为两部分：<strong>“data”</strong> 和 <strong>“page”</strong>。<br>data：包含 html 文本数据，本次爬虫重点关注以下字段：</p>
-<table>
-<thead>
-<tr>
-<th align="center">字段</th>
-<th align="center">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">author -&gt; name</td>
-<td align="center">用户名</td>
-</tr>
-<tr>
-<td align="center">author -&gt; url_token</td>
-<td align="center">用户token</td>
-</tr>
-<tr>
-<td align="center">content</td>
-<td align="center">回答</td>
-</tr>
-<tr>
-<td align="center">updated_time</td>
-<td align="center">回答时间</td>
-</tr>
-<tr>
-<td align="center">voteup_count</td>
-<td align="center">赞同数量</td>
-</tr>
-<tr>
-<td align="center">comment_count</td>
-<td align="center">评论数量</td>
-</tr>
-</tbody></table>
-<p><strong>说明：</strong><br><strong>用户token是用户的唯一识别标志</strong>，“<a href="https://www.zhihu.com/people/%E2%80%9D">https://www.zhihu.com/people/”</a> + url_token 为该用户知乎主页；<br><strong>报文中的时间都是时间戳</strong>，需要转化为 “年-月-日 时-分-秒” 的形式。</p>
-<p>page：记录是否已经是该问题下的最后一个回答。如果字段 <strong>is_end = true</strong>，则可以结束请求。</p>
-<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>引包：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> csv</span><br><span class="line"><span class="keyword">import</span> codecs <span class="comment">#解决乱码</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> pyquery <span class="keyword">import</span> PyQuery <span class="keyword">as</span> pq</span><br></pre></td></tr></table></figure>
-
-<p>请求头和URL：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 请求头</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Request URL</span></span><br><span class="line">base_url = <span class="string">&quot;https://www.zhihu.com/api/v4/questions/482094335/answers?&quot;</span></span><br><span class="line">include = <span class="string">&quot;data%5B%2A%5D.is_normal%2Cadmin_closed_comment%2Creward_info%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cattachment%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelevant_info%2Cquestion%2Cexcerpt%2Cis_labeled%2Cpaid_info%2Cpaid_info_content%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cis_recognized%3Bdata%5B%2A%5D.mark_infos%5B%2A%5D.url%3Bdata%5B%2A%5D.author.follower_count%2Cvip_info%2Cbadge%5B%2A%5D.topics%3Bdata%5B%2A%5D.settings.table_of_content.enabled&quot;</span></span><br></pre></td></tr></table></figure>
-<p>获得页面：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 获得页面</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_page</span>(<span class="params">offset</span>):</span></span><br><span class="line">    page_url = <span class="string">&#x27;include=&#x27;</span> + include + <span class="string">&#x27;&amp;limit=5&amp;&#x27;</span> + <span class="string">&#x27;offset=&#x27;</span> + <span class="built_in">str</span>(offset) + <span class="string">&#x27;&amp;platform=desktop&amp;sort_by=default&#x27;</span></span><br><span class="line">    url = base_url + page_url</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.get(url, headers=headers)</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">            <span class="keyword">return</span> response.json()</span><br><span class="line">    <span class="keyword">except</span> requests.ConnectionError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Error&#x27;</span>, e.args)</span><br></pre></td></tr></table></figure>
-<p>时间转换：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 时间戳转化为年-月-日 时-分-秒</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">TimeStampToTime</span>(<span class="params">timestamp</span>):</span></span><br><span class="line">    timeStruct = time.localtime(timestamp)</span><br><span class="line">    <span class="keyword">return</span> time.strftime(<span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>, timeStruct)</span><br></pre></td></tr></table></figure>
-<p>解析页面：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 解析网页</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse_page</span>(<span class="params">json</span>):</span></span><br><span class="line">    <span class="keyword">if</span> json:</span><br><span class="line">        items = json.get(<span class="string">&#x27;data&#x27;</span>)</span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> items:  <span class="comment"># items: 一条报文中的所有回答 </span></span><br><span class="line">            zhihu = &#123;&#125;</span><br><span class="line">            zhihu[<span class="string">&#x27;作者&#x27;</span>] = item.get(<span class="string">&#x27;author&#x27;</span>).get(<span class="string">&#x27;name&#x27;</span>)</span><br><span class="line">            zhihu[<span class="string">&#x27;user_token&#x27;</span>] = item.get(<span class="string">&#x27;author&#x27;</span>).get(<span class="string">&#x27;url_token&#x27;</span>)</span><br><span class="line">            zhihu[<span class="string">&#x27;回答&#x27;</span>] = pq(item.get(<span class="string">&#x27;content&#x27;</span>)).text()</span><br><span class="line">            zhihu[<span class="string">&#x27;创建时间&#x27;</span>] = TimeStampToTime(item.get(<span class="string">&#x27;updated_time&#x27;</span>))</span><br><span class="line">            zhihu[<span class="string">&#x27;赞同数&#x27;</span>] = item.get(<span class="string">&#x27;voteup_count&#x27;</span>)</span><br><span class="line">            zhihu[<span class="string">&#x27;评论数&#x27;</span>] = item.get(<span class="string">&#x27;comment_count&#x27;</span>)</span><br><span class="line">            <span class="keyword">yield</span> zhihu</span><br></pre></td></tr></table></figure>
-<p>主函数执行：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    i = <span class="number">0</span>  </span><br><span class="line">    f = codecs.<span class="built_in">open</span>(<span class="string">&#x27;test.csv&#x27;</span>, <span class="string">&#x27;w+&#x27;</span>, <span class="string">&#x27;utf_8_sig&#x27;</span>)</span><br><span class="line">    f_txt = <span class="built_in">open</span>(<span class="string">&#x27;test.txt&#x27;</span>, <span class="string">&#x27;w+&#x27;</span>, encoding=<span class="string">&#x27;utf_8&#x27;</span>)</span><br><span class="line">    fieldnames = [<span class="string">&#x27;作者&#x27;</span>, <span class="string">&#x27;user_token&#x27;</span>, <span class="string">&#x27;回答&#x27;</span>, <span class="string">&#x27;创建时间&#x27;</span>, <span class="string">&#x27;赞同数&#x27;</span>, <span class="string">&#x27;评论数&#x27;</span>]</span><br><span class="line">    writer = csv.DictWriter(f, fieldnames=fieldnames)</span><br><span class="line">    writer.writeheader()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        js = get_page(i*<span class="number">5</span>)  <span class="comment"># 根据报文首个回答对应的索引值获取页面</span></span><br><span class="line">        results = parse_page(js)</span><br><span class="line">        <span class="keyword">for</span> res <span class="keyword">in</span> results:</span><br><span class="line">            writer.writerow(res)</span><br><span class="line">            <span class="keyword">for</span> detail <span class="keyword">in</span> res.values():</span><br><span class="line">                f_txt.write(<span class="built_in">str</span>(detail) + <span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">            f_txt.write(<span class="string">&#x27;\n&#x27;</span> + <span class="string">&#x27;*&#x27;</span> * <span class="number">50</span> + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 分隔符</span></span><br><span class="line">        <span class="keyword">if</span> js.get(<span class="string">&#x27;paging&#x27;</span>).get(<span class="string">&#x27;is_end&#x27;</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;finish!&#x27;</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    f.close()</span><br><span class="line">    f_txt.close()</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://blog.csdn.net/m0_37969932/article/details/116330217?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162969083416780261967528%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=162969083416780261967528&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-116330217.ecpm_v1_rank_v29&utm_term=%E7%9F%A5%E4%B9%8E%E7%88%AC%E8%99%AB&spm=1018.2226.3001.4187">2021年知乎爬虫</a></p>
-<p><a href="https://blog.csdn.net/weixin_45019310/article/details/89923644?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522162977091516780255228188%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=162977091516780255228188&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-89923644.pc_search_download_positive&utm_term=%E7%9F%A5%E4%B9%8Eajax&spm=1018.2226.3001.4187">python爬虫——关于ajax加载之爬取2019年知乎问题和描述</a></p>
-<p><a href="https://www.sohu.com/a/238246281_100109711">Ajax原理</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-        <tag>爬虫</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2021/08/23/hello-world/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-      <tags>
-        <tag>博客相关</tag>
       </tags>
   </entry>
 </search>
